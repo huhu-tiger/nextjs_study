@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4_getSnapshotBeforeUpdate的使用场景</title>
+    <meta charset="utf-8">
+    <style>
+        .news-list{
+            width: 200px;
+            height: 200px;
+            border: 1px solid #000;
+            background-color: skyblue;
+            overflow: auto;
+        }
+        .news-item{
+            height: 30px;
+        }
+    </style>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- 对组件标签属性props进行限制 -->
+    <script src="https://unpkg.com/prop-types@15.7.2/prop-types.js"></script>
+</head>
+
+
+<body>
+    <div id="test"></div>
+    <script type="text/babel">
+        /*
+        1. 初始化阶段: 由ReactDOM.render()触发---初次渲染
+           1. constructor()
+           2. getDerivedStateFromProps()
+           3. render()
+           4. componentDidMount() ===> 常用
+             1. 发送网络请求
+             2. 订阅消息
+             3. 开启定时器
+             4. 等
+
+        2. 更新阶段: 由组件内部this.setState()或父组件重新渲染
+           1. getDerivedStateFromProps()
+           2. shouldComponentUpdate()
+           3. render()
+           4. getSnapshotBeforeUpdate()
+           5. componentDidUpdate()
+
+        3. 卸载阶段: 由ReactDOM.unmountComponentAtNode()触发
+           1. componentWillUnmount() ===> 常用
+             1. 做收尾工作
+             2. 如: 关闭定时器
+        */
+        class NewsList extends React.Component{
+            constructor(props){
+                super(props)
+                this.state={
+                    newsArr:[]
+                }
+            }
+
+
+            componentDidMount(){
+                console.log("NewsList-componentDidUpdate")
+                setInterval(()=>{
+                    const {newsArr} = this.state
+                    const news = '新闻' + (newsArr.length + 1)
+                    this.setState({
+                        newsArr: [news, ...newsArr]
+                    })
+                },1000);
+                console.log(this.state.newsArr)
+            }
+            getSnapshotBeforeUpdate(){
+                return this.refs.list.scrollHeight
+            }
+            componentDidUpdate(prevProps, prevState, height) {
+                // 获取到高度, 计算出高度差, 然后更新到状态中
+                this.refs.list.scrollTop += this.refs.list.scrollHeight - height
+            }
+            render(){
+                return(
+                    <div>
+                        <div className="news-list" ref="list">
+                            {this.state.newsArr.map((item,index)=>{
+                                return <div className="news-item" key={index}>{item}</div>
+                            })}
+                        </div>
+                    </div>
+                )
+            }
+        }
+
+        ReactDOM.render(<NewsList/>,document.getElementById("test"))
+
+    </script>
+</body>

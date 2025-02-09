@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1_验证Diffing算法</title>
+    <meta charset="utf-8">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- 对组件标签属性props进行限制 -->
+    <script src="https://unpkg.com/prop-types@15.7.2/prop-types.js"></script>
+</head>
+
+
+<body>
+    <div id="test"></div>
+    <script type="text/babel">
+       class Time extends React.Component{
+        state = {
+            date:new Date()
+        }
+        componentDidMount(){
+            this.timer = setInterval(()=>{
+                this.setState({date:new Date()})
+            },1000)
+        }
+        componentWillUnmount(){
+            clearInterval(this.timer)
+        }
+        render(){
+            return (
+            <div>
+                <h1>hello</h1>
+                <input type="text" />
+                <span>
+                    现在是：{this.state.date.toLocaleTimeString()}
+                    <input type="text" />   
+                </span>
+                </div>
+
+            )
+        }
+       }
+
+        ReactDOM.render(<Time/>,document.getElementById("test"))
+
+    </script>
+</body>

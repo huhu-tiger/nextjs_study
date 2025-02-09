@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <style>
+        .title{
+            background-color: orange;
+            width: 200px;
+        }
+    </style>
+    <title>hello react</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+<body>
+    <!-- 准备好容器 -->
+    <div id="test"></div>
+
+    <!-- 引入react核心库 -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <!-- 引入react-dom库 -->
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- 使用babel的语法 -->
+    <script type="text/babel"> 
+    const myid = 'aTgUiGu'
+    const myData = 'Hello React'
+    // 1.创建创建虚拟DOM
+    const VDOM = (
+        <div>
+        <h2 className='title' id={myid.toLocaleLowerCase()}>
+            <span style={{color:"white",fontSize:'20px'}}>{myData.toLocaleLowerCase()}</span>
+        </h2>
+        <h2 className='title' id={myid.toLocaleUpperCase()}>
+            <span style={{color:"white",fontSize:'20px'}}>{myData.toLocaleLowerCase()}</span>
+        </h2>
+        <input type="text" />
+        <good>123</good>
+        </div>
+    )
+    // 2. 渲染虚拟DOM到页面
+    ReactDOM.render(VDOM, document.getElementById('test'))
+    /*
+    jsx 语法规则：
+    1. 定义虚拟DOM，不要写引号
+    2. 标签中混入JS表达式时要用{}
+    3. 样式的类名使用className，不要使用class
+    4. 内联样式，使用style={{key:value}}
+    5. 只有一个根标签
+    6. 标签必须闭合
+    7. 标签首字母
+       （1）若小写字母开着，则将改标签转为html 同名元素，若HTMNLON的标签中没有，则报错
+       （2）若大写字母开头，则react就去渲染对应的组件，若没有定义该组件，则报错
+    */
+    </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <title>展开运算符</title>
+    </head>
+    <body>
+        <script>
+            let arr = [1,2,3,4,5]
+            let arr2 = [2,3,4,5,6]
+            let arr3 = [...arr,...arr2]
+            console.log(arr3)
+
+            //在函数中使用
+            function sum(...nums){
+                return nums.reduce((pre,cur)=>{
+                    return pre + cur
+                },0)
+            }
+            console.log(sum(...arr3))
+
+            //构造字面量对象时使用展开语法
+            let obj = {name:"张三",age:18}
+            let obj2 = {...obj}
+            console.log(obj2) //{name: "张三", age: 18}
+
+            // 合并对象
+            let obj3 = {...obj,gender:"男",name:"李四"}
+            console.log(obj3) //{name: "李四", age: 18, gender: "男"}
+
+            //在创建数组时使用展开语法
+            let arr4 = [...arr3]
+            console.log(arr4)
+            
+        </script>
+    </body>
+</html>

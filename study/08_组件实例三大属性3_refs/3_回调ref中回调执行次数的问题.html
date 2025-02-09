@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3_回调ref中回调执行次数的问题</title>
+    <meta charset="utf-8">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="test"></div>
+    <script type="text/babel">
+        class Demo extends React.Component{
+            state={ ishot:true}
+            render(){
+                return (
+                    <div>
+                        <h2 onClick={this.changeWeather}>今天天气很{this.state.ishot?"炎热":"凉爽"}</h2>
+                        {/*<input ref={(c)=>{this.input1=c;console.log("@",c)}} type="text" placeholder="点击按钮提示数据"/>&nbsp;*/}
+                        <input ref={this.saveInput} type="text" placeholder="点击按钮提示数据"/><br/><br/>
+                        <button onClick={this.showInfo}>点我提示左侧输入的内容</button>&nbsp;
+                        <button onClick={this.changeWeather}>点我切换天气</button>
+                    </div>
+
+                )
+            }
+            saveInput=(c)=>{
+                this.input1=c
+                console.log("@",c)
+            }
+            showInfo=()=>{
+                const {input1}=this
+                alert(input1.value)
+            }
+            changeWeather=()=>{
+                const {ishot}=this.state
+                this.setState({ishot:!ishot})
+            }
+        }
+
+
+        ReactDOM.render(<Demo/>,document.getElementById("test"))
+    </script>
+</body>

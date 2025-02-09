@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2_key的作用</title>
+    <meta charset="utf-8">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- 对组件标签属性props进行限制 -->
+    <script src="https://unpkg.com/prop-types@15.7.2/prop-types.js"></script>
+</head>
+
+
+<body>
+    <div id="test"></div>
+    <script type="text/babel">
+        /*
+        经典面试题
+        1). react/vue中的key有什么作用？
+        2). 为什么遍历列表时，key最好不要用index？
+
+        1. 虚拟DOM中key的作用
+            1. 简单的说: key是虚拟DOM对象的标识, 在更新时, 虚拟DOM会根据key, 判断是否是同一个对象
+            2. 详细的说: 当状态中的数据发生变化时, react会根据新数据生成新的虚拟DOM, 
+            随后React进行新虚拟DOM与旧虚拟DOM的差异比较，比如规则如下：
+            a. 旧虚拟DOM中找到了与新虚拟DOM相同的key, 则不更新, 即虚拟DOM中的数据不变
+            b. 旧虚拟DOM中未找到与新虚拟DOM相同的key, 则更新, 即虚拟DOM中的数据改变
+
+        2. 用index作为key可能会引发的问题
+            1. 若对数据进行逆序添加、逆序删除等破坏顺序的操作, 会产生没有必要的真实DOM更新, 
+            2. 如果结构中还包含输入类的DOM, 会产生错误
+            3. 注意！ 如果不存在对数据进行逆序添加、逆序删除等破坏顺序的操作, 则不存在问题
+            
+        3. 开发中如何选择key
+            1. 最好使用每条数据的唯一标识作为key, 比如id、手机号、身份证号、学号等唯一值
+            2. 如果确定数据不会进行逆序添加、逆序删除等破坏顺序的操作, 则可以使用index作为key
+        */
+
+        /*
+        慢动作回放----使用index作为key
+        初始化数据：
+            {id:1,name:"张三",age:18},
+            {id:2,name:"李四",age:20},
+            {id:3,name:"王五",age:22},
+        初始化的虚拟DOM：
+            <ul>
+                <li key="0">张三</li>
+                <li key="1">李四</li>
+                <li key="2">王五</li>
+            </ul>
+        
+        点击添加人员：
+            {id:1,name:"张三",age:18},
+            {id:2,name:"李四",age:20},
+            {id:3,name:"王五",age:22},
+            {id:4,name:"赵六",age:24}
+        
+        新虚拟DOM： 重新渲染了所有列表项
+            <ul>
+                <li key="0">赵六</li>
+                <li key="1">张三</li>
+                <li key="2">李四</li>
+                <li key="3">王五</li>
+            </ul>
+        
+        
+        
+        */
+        class Person extends React.Component{
+            state = {
+                persons:[
+                    {id:1,name:"张三",age:18},
+                    {id:2,name:"李四",age:20},
+                    {id:3,name:"王五",age:22},
+                ]
+            }
+            addPerson = () => {
+                const {persons} = this.state
+                persons.unshift({id:persons.length+1,name:"赵六",age:24})
+                this.setState({persons})
+            }
+            render(){
+                return (
+                    <div>
+                        <button onClick={this.addPerson}>添加人员</button>
+                        <h2>使用index作为key</h2>
+                 
+                        <ul>
+                            {this.state.persons.map((person,index)=>{
+                                return <li key={index}>{person.name}<input type="text"/></li>
+                        })}
+                        </ul>
+                        <hr/>
+                        <h2>使用唯一标识作为key</h2>
+    
+                        <ul>
+                            {this.state.persons.map((person)=>{
+                                return <li key={person.id}>{person.name}<input type="text"/></li>
+                            })} 
+                        </ul>
+                    </div>
+                )
+            }
+        }
+
+        ReactDOM.render(<Person/>,document.getElementById("test"))
+
+    </script>
+</body>

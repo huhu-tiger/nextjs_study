@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1_非受控组件</title>
+    <meta charset="utf-8">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="test"></div>
+    <script type="text/babel">
+        class Login extends React.Component{
+            render(){
+                return (
+                    <form action="https://www.baidu.com" onSubmit={this.handleSubmit}>
+                        <label htmlFor="username">用户名：</label>
+                        <input type="text" id="username" name="username" ref={(c)=>{this.usernameRef=c}} />
+                        <label htmlFor="password">密码：</label>
+                        <input type="password" id="password" name="password" ref={(c)=>{this.passwordRef=c}} />
+                        <button type="submit">登录</button>
+                    </form>
+                )
+            }
+            handleSubmit=(event)=>{
+                // 阻止表单提交
+                event.preventDefault()
+                // 获取表单数据
+                const {usernameRef,passwordRef}=this
+                alert(`用户名：${usernameRef.value}，密码：${passwordRef.value}`) 
+            }
+        }
+        ReactDOM.render(<Login/>,document.getElementById("test"))
+    </script>
+</body>

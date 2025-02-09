@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <style>
+        .title{
+            background-color: orange;
+            width: 200px;
+        }
+    </style>
+    <title>hello react</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+<body>
+    <!-- 准备好容器 -->
+    <div id="test"></div>
+
+    <!-- 引入react核心库 -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <!-- 引入react-dom库 -->
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- 使用babel的语法 -->
+    <script type="text/babel"> 
+        class MyComponent extends React.Component{
+            render(){
+                // render方法中的this是MyComponent的组件实例对象
+                console.log("render中的this",this) // MyComponent的原型对象上有一个render方法
+                // 类式组件中，必须有render方法，且必须返回虚拟DOM ，MyComponent的原型对象上有一个render方法
+                return<h2>我是类式组件(适用于[复杂组件]的定义)</h2>
+            }
+        }
+        ReactDOM.render(<MyComponent />, document.getElementById('test'))
+                // ReactDOM.createRoot(document.getElementById('test')).render(<MyComponent />)
+        /*
+        执行了ReactDOM.render(<MyComponent />, document.getElementById('test'))
+        1. React解析组件标签，找到MyComponent组件
+        2. 发现组件是类定义的，随后new类得到其实例对象，随后将实例对象转为虚拟DOM进行渲染，
+        3. 通过实例ReactDOM.render方法将虚拟DOM转为真实DOM进行渲染
+        */
+    </script>
+</body>
+</html>

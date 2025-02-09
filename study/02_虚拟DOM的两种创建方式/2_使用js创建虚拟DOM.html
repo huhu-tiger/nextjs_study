@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>hello react</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+<body>
+    <!-- 准备好容器 -->
+    <div id="test"></div>
+    <!-- 引入react核心库 -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <!-- 引入react-dom库 -->
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- 使用babel的语法 -->
+    <script type="text/javascript"> 
+        // 1.创建虚拟DOM
+        const VDOM = React.createElement('h1',{id:'title'},'Hello React')  
+        //2.渲染虚拟DOM到页面
+        ReactDOM.render(VDOM, document.getElementById('test'))
+    </script>
+</body>
+</html>

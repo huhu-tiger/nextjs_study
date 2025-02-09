@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <style>
+        .title{
+            background-color: orange;
+            width: 200px;
+        }
+    </style>
+    <title>hello react</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+<body>
+    <!-- 准备好容器 -->
+    <div id="test"></div>
+
+    <!-- 引入react核心库 -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <!-- 引入react-dom库 -->
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- 使用babel的语法 -->
+    <script type="text/babel"> 
+    /*
+    一定注意区分： 【js语句（代码）】 与 【js表达式】
+    1. 表达式：一个表达式会产生一个值，可以放在任何一个需要值的地方
+    例如：
+    a
+    a+b
+    demo(a)
+    arr.map()
+    function getArea(width,height){
+        return width*height
+    }
+    2. 语句：语句可以没有值，语句一般会以分号结尾
+    例如：
+    if(){}
+    for(){}
+    switch(){case:1:break}
+    
+    */
+    const myid = 'aTgUiGu'
+    const myData = 'Hello React'
+    const names = ['Ang', 'React', 'Vue']
+    // 1.创建创建虚拟DOM
+    const VDOM = (
+        <div>
+        <h2 className='title' id={myid.toLocaleLowerCase()}>
+            <span style={{color:"white",fontSize:'20px'}}>{myData.toLocaleLowerCase()}</span>
+        </h2>
+            <ul>
+                {names.map((name,index)=>{
+                    return <li key={index}>{name}</li>
+                })}
+            </ul>
+        </div>
+    )
+    // 2. 渲染虚拟DOM到页面
+    ReactDOM.render(VDOM, document.getElementById('test'))
+    </script>
+</body>
+</html>

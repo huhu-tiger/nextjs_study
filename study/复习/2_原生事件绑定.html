@@ -1,0 +1,29 @@
+<html>
+    <head>
+        <title>类的基本知识</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <button id="btn1">点我一下</button>
+        <button id="btn2">点我一下</button>
+        <button onclick="demo()">点我一下</button>
+        <script type="text/javascript">
+            // 获取元素
+            const btn1 = document.getElementById("btn1")
+            // 绑定事件
+            btn1.onclick = function(){
+                alert("btn1被点击了")
+            }
+            // 获取元素
+            const btn2 = document.getElementById("btn2")
+            // 绑定事件
+            btn2.onclick = function(){
+                alert("btn2被点击了")
+            }
+            // 绑定事件
+            function demo(){
+                alert("demo被点击了")
+            }
+        </script>
+    </body>
+</html>

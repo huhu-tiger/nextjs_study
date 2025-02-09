@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <title>类的基本知识</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <script type="text/javascript">
+            /*
+            总结：
+            1. 类中构造器不是必须的，如果没有显示定义，类中会默认存在一个空的构造器
+            2. 类中一般方法都放在原型对象中
+            3. 类中静态方法都放在类本身上
+            4. 类中静态属性都放在类本身上
+            5. 类中实例属性都放在实例对象上
+            6. 类中实例方法都放在实例对象的原型对象上
+            7. 如何A类继承B类，A类称为子类，B类称为父类，且A类有了构造器，则A类构造器中必须调用super()，且super()的参数必须与父类构造器的参数一致
+            */
+            // 创建一个Person类
+            class Person{
+                // 构造器
+                constructor(name,age){
+                    // 在构造器中，this表示当前实例对象
+                    this.name = name
+                    this.age = age
+                }
+                // 一般方法
+                speak(){
+                    console.log(this)
+  
+                }
+            }
+            const p1 = new Person('tom',18)
+            p1.speak()
+            const p2 = p1.speak // 将speak方法赋值给p2,  speak方法的内存地址赋值给p2
+            p2() // 调用p2，p2的this指向window
+            
+        </script>
+    </body>
+</html>

@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>演示函数的柯里化</title>
+    </head>
+    <body>
+        <script type="text/javascript">
+            function add(a,b){
+                return (c)=>{
+                    return (d)=>{
+                        return a+b+c+d
+                    }
+                }
+            }
+            console.log(add(1,2)(3)(4))
+        </script>
+    </body>
+</html>

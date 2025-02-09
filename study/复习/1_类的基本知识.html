@@ -1,0 +1,70 @@
+<html>
+    <head>
+        <title>类的基本知识</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <script type="text/javascript">
+            /*
+            总结：
+            1. 类中构造器不是必须的，如果没有显示定义，类中会默认存在一个空的构造器
+            2. 类中一般方法都放在原型对象中
+            3. 类中静态方法都放在类本身上
+            4. 类中静态属性都放在类本身上
+            5. 类中实例属性都放在实例对象上
+            6. 类中实例方法都放在实例对象的原型对象上
+            7. 如何A类继承B类，A类称为子类，B类称为父类，且A类有了构造器，则A类构造器中必须调用super()，且super()的参数必须与父类构造器的参数一致
+            */
+            // 创建一个Person类
+            class Person{
+                // 构造器
+                constructor(name,age){
+                    // 在构造器中，this表示当前实例对象
+                    this.name = name
+                    this.age = age
+                }
+                // 一般方法
+                speak(){
+                    //speak放在类的原型对象中，供实例使用
+                    console.log(`${this.name}说：我今年${this.age}岁`);
+                }
+            }
+            // 创建一个Person类的实例
+            const p1 = new Person('tom',18)
+            const p2 = new Person('jerry',20)
+            console.log(p1);
+            console.log(p2);
+            p1.speak()
+            p2.speak()
+            p1.speak.call(p2)
+
+            class Student extends Person{
+                constructor(name,age,grade){
+                    super(name,age)
+                    this.grade = grade
+                }
+                // 重写父类的方法
+                speak(){
+                    console.log(`${this.name}说：我今年${this.age}岁，我在${this.grade}年级`);
+                }
+                // 
+                study(){    
+                    console.log(`${this.name}说：我今年${this.age}岁，我在${this.grade}年级`);
+                }
+            }
+            const s1 = new Student('张三',20,'高一')
+            console.log(s1);
+            s1.speak()
+            s1.study()
+
+            
+            class Car{
+                // 实例属性
+                wheels = 4
+            }
+            const car1 = new Car()
+            console.log(car1);
+            console.log(car1.wheels);
+        </script>
+    </body>
+</html>

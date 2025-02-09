@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高阶函数_函数柯里化</title>
+    <meta charset="utf-8">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="test"></div>
+    <script type="text/babel">
+        class Login extends React.Component{
+            state={
+                username:'',
+                password:''
+            }
+            /*
+            高阶函数：如果一个函数符合下面两个条件之一，那么该函数就是高阶函数
+            1. 接收一个或多个函数作为参数
+            2. 将函数作为返回值返回
+            常见的高阶函数：
+                - 定时器：setTimeout、setInterval
+                - 数组遍历相关的方法：forEach、map、filter、reduce
+                - 函数对象的常见方法：bind、call、apply
+                - promise：then、catch
+            函数柯里化：通过函数调用返回一个新的函数，并且返回的函数在函数体内以闭包的形式保存父函数中的变量
+            */
+            saveFormData=(dataType)=>{
+                return (event)=>{
+                    this.setState({[dataType]:event.target.value})
+                }
+            }
+            render(){
+                return (
+                    <form  onSubmit={this.handleSubmit}>
+                        <label htmlFor="username">用户名：</label>
+                        <input onChange={this.saveFormData('username')} type="text" id="username" name="username"  />
+                        <label htmlFor="password">密码：</label>
+                        <input onChange={this.saveFormData('password')} type="password" id="password" name="password"  />
+                        <button type="submit">登录</button>
+                    </form>
+                )
+            }
+            handleSubmit=(event)=>{
+                event.preventDefault()
+                const {username,password}=this.state
+                alert(`用户名：${username}，密码：${password}`)
+            }
+        }
+        ReactDOM.render(<Login/>,document.getElementById("test"))
+    </script>
+</body>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>事件处理</title>
+    <meta charset="utf-8">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="test"></div>
+    <script type="text/babel">
+        class Demo extends React.Component{
+            /*
+             （1）通过onXxx属性指定事件处理函数（注意大小写）
+                a. React 使用的是自定义事件，而不是原生事件  --为了更好兼容性
+                b. React 事件的是通过事件委托机制实现的 --为了更好性能
+             （2）通过event.target得到发生事件的元素，不要过度使用ref
+            */
+            myRef=React.createRef()
+            myRef2=React.createRef()
+            render(){
+                return (
+                    <div>
+                        <input ref={this.myRef} type="text" placeholder="点击按钮提示数据"/>&nbsp;
+                        <button onClick={this.showData}>点我提示左侧输入的内容</button>&nbsp;
+                        <input onBlur={this.showData2} type="text" placeholder="失去焦点提示数据"/>
+                    </div>
+
+                )
+            }
+            showData=()=>{
+                console.log(this.myRef)
+                alert(this.myRef.current.value)
+            }
+            // 右侧输入框
+            showData2=(event)=>{
+                alert(event.target.value)
+            }
+        }
+
+        ReactDOM.render(<Demo/>,document.getElementById("test"))
+    </script>
+</body>
