@@ -4,7 +4,6 @@ import About from './pages/About'
 import Home from './pages/Home'
 import Header from './components/Header'
 import './App.css'
-import MyNavLink from './components/MyNavLink'
 
 export default class App extends Component {
   render() {
@@ -30,7 +29,7 @@ export default class App extends Component {
               <a href='/home'>Home</a>
               */}
               {/* 使用react-router-dom中的Link组件进行页面跳转 */}
-              {/* <NavLink 
+              <NavLink 
                 className={({isActive}) => isActive ? 'list-group-item demo' : 'list-group-item'}
                 to="/about"
               >
@@ -41,9 +40,7 @@ export default class App extends Component {
                 to="/home"
               >
                 Home
-              </NavLink> */}
-              <MyNavLink to="/about" a={1} b={2}>About</MyNavLink> {/* 传递参数 About 变量名是children*/}
-              <MyNavLink to="/home" >Home</MyNavLink>
+              </NavLink>
             </div>
           </div>
           
