@@ -16,6 +16,12 @@
             render(){
                 return (
                     <div>
+                        {/* 回调函数形式的ref:
+                            1. ref={(c)=>{this.input1=c}} 中的c是React自动传入的参数,代表当前节点的DOM元素
+                            2. 通过箭头函数将DOM元素保存到组件实例的input1属性上
+                            3. 之后可以通过this.input1访问到对应的DOM元素
+                            4. 回调形式的ref可以更灵活地操作DOM元素
+                        */}
                         <input ref={(c)=>{this.input1=c}} type="text" placeholder="点击按钮提示数据"/>&nbsp;
                         <button onClick={this.showData}>点我提示左侧输入的内容</button>&nbsp;
                         <input ref={(c)=>{this.input2=c}} onBlur={this.showData2} type="text" placeholder="失去焦点提示数据"/>

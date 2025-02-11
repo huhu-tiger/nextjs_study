@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-export default class index extends Component {
+export default class Item extends Component {
   state = {
     mouseEnter: false
   }
@@ -9,8 +9,15 @@ export default class index extends Component {
     this.setState({mouseEnter: flag})
   }
 
+
+  updateTodo = (id) => {
+    return (e)=>{
+      this.props.updateTodo(id,e.target.checked)
+    }
+  }
+
   render() {
-    const { item, handleChange, handleDelete } = this.props
+    const { item,  deleteTodo } = this.props
     return (
       <div> 
         <li 
@@ -18,12 +25,12 @@ export default class index extends Component {
           onMouseEnter={() => this.handleMouse(true)}
           onMouseLeave={() => this.handleMouse(false)}
         >
-          <input id={item.id} type="checkbox" checked={item.isDone} onChange={handleChange}/>
+          <input id={item.id} type="checkbox" checked={item.isDone} onChange={this.updateTodo(item.id)}/>
           <span style={{margin: '0 20px'}}>{item.name}</span>
           <button 
             style={{display: this.state.mouseEnter ? 'inline-block' : 'none'}}
             className="delete"
-            onClick={()=>window.confirm('确定要删除吗?') && handleDelete(item.id)}
+            onClick={()=>window.confirm('确定要删除吗?') && deleteTodo(item.id)}
           >
             删除
           </button>
