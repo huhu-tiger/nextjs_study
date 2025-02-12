@@ -1,109 +1,96 @@
+## 路由的基本使用
+
+  1. 明确好界面中的导航区、展示区
+  2. 导航区的a标签改为Link标签
+    <Link to="/about">About</Link>
+  3. 展示区写Route标签进行路径的匹配
+    <Route path="/about" component={About}/>
+  4. <App>的最外层包裹BrowserRouter
+
+## 路由组件与一般组件区别
+  1. 写法不同
+   一般组件：<Demo/>
+   路由组件：<Route path="/demo" component={Demo}/>
+  2. 存放位置不同
+   一般组件：在components文件夹中
+   路由组件：在pages文件夹中
+  3. 接收到的props不同
+   一般组件：传递什么接收什么
+   路由组件：接收到三个参数：history、location、match
+        history:
+          go: ƒ go(n)
+          goBack: ƒ goBack()
+          goForward: ƒ goForward()
+          push: ƒ push(path, state)
+          replace: ƒ replace(path, state)
+        location:
+          pathname: "/about"
+          search: ""
+          state: undefined
+        match:
+          params: {}
+          path: "/about"
+          url: "/about"
+        
+## NavLink 与封装NavLink
+  1. NavLink 可以 实现路由链接的默认选中，即默认高亮
+  2. 标签体内容是一个特殊的标签属性：children
+  3. 通过this.props.children可以获取到标签体内容
 
 
-我来帮你在 README.md 开头添加完整的项目说明：
+## 12 多级路径 刷新页面样式丢失问题
+  1. index.html 使用%PUBLIC_URL% 替换./
+  2. 使用css cdn
+  3. 使用hashRouter
 
-```markdown:study/react-staging/README.md
-# React 学习项目
+## 13 路由的严格匹配与模糊匹配
+  1. 默认使用模糊匹配
+  2. 开启严格匹配：<Route exact={true} path="/home" component={Home}/>
+  3. 严格匹配 不要随便使用，影响使用二级路由
 
-这是一个用于学习 React 的项目，使用 Create React App 搭建。
+## 14 默认路由
+  1. 使用<Navigate to="/prefix/about" replace /> 实现默认路由 ，replace 表示替换当前路由, 
+  react-router-dom 6.x.x 中使用Navigate
+  react-router-dom 5.x.x 中使用Redirect
 
-## 项目设置
+## 15 路由的嵌套
+  1. 使用<Route>标签包裹<Route>标签
+  2. 使用<Routes>标签包裹<Route>标签
+  3. 使用<Navigate>标签包裹<Route>标签
+  4. 使用<Link>标签包裹<Link>标签
+  5. 使用<NavLink>标签包裹<NavLink>标签
+  6. 使用<Switch>标签包裹<Route>标签
+  7. 使用<Redirect>标签包裹<Route>标签
+  8. path 使用相对路径，不需要 一级路由 前缀
 
-### 环境要求
-- Node.js >= 14.0.0
-- npm >= 6.14.0
+## 16 路由组件传参,params
+  1. params 使用useParams 获取动态路由参数
+  2. path 使用相对路径，不需要 一级路由 前缀
+  
 
-### 安装依赖
-```bash
-npm install
-```
+## 17 路由组件传参,search
+  1. search 使用useSearchParams 获取查询参数
 
-### 开发服务器
-```bash
-npm start
-```
-访问 http://localhost:3000 查看应用
+  2. path 使用相对路径，不需要 一级路由 前缀
+  3. 获取查询参数
+    const [search, setSearch] = useSearchParams()
+    console.log('查询参数:', search.get('id'))
 
-### 打包构建
-```bash
-npm run build
-```
-构建后的文件将生成在 `build` 目录中
+## 18 路由组件传参,state
+  1. state 使用useLocation 获取路由信息
+  2. path 使用相对路径，不需要 一级路由 前缀
+  3. 获取路由信息
+    const location = useLocation()
+    console.log('路由信息:', location.state)
+  4. 刷新页面，state 数据不会丢失
 
-## 项目结构
-```
-react-staging/
-  ├── public/
-  │   ├── index.html      # 页面模板
-  │   └── favicon.ico     # 网站图标
-  ├── src/
-  │   ├── App.js          # 根组件
-  │   ├── App.css         # 根组件样式
-  │   ├── index.js        # 应用入口
-  │   └── index.css       # 全局样式
-  ├── package.json        # 项目配置和依赖
-  └── README.md           # 项目说明文档
-```
+## 19 push 与 replace
+  1. 使用navigate(path, { replace: true }) 实现replace
+  2. 使用navigate(path) 实现push
 
-## 主要依赖
-- react: ^18.2.0
-- react-dom: ^18.2.0
-- react-scripts: ^5.0.1
-- web-vitals: ^2.1.4
+## 20 编程式路由导航方法说明
+  1. 使用useNavigate 获取导航函数
+  2. useNavigate 只能放在函数组件中
+  
 
-## 开发指南
 
-### 创建新组件
-1. 在 `src` 目录下创建新的组件文件
-2. 导入必要的依赖
-3. 编写组件代码
-4. 在需要使用的地方导入并使用组件
-
-示例：
-```jsx
-// src/components/Hello.js
-import React from 'react';
-
-function Hello() {
-  return <h1>Hello, React!</h1>;
-}
-
-export default Hello;
-```
-
-### 添加新的依赖
-```bash
-npm install package-name
-```
-
-### 代码规范
-- 使用 ESLint 进行代码检查
-- 遵循 React 官方推荐的代码规范
-- 组件文件使用大驼峰命名
-
-## 常见问题解决
-
-### 启动失败
-1. 检查端口 3000 是否被占用
-2. 删除 node_modules 后重新安装依赖
-3. 清除 npm 缓存：`npm cache clean --force`
-
-### 编译错误
-1. 检查语法错误
-2. 确保所有依赖都已正确安装
-3. 检查 import 语句是否正确
-
-## 学习资源
-- [React 官方文档](https://reactjs.org/)
-- [Create React App 文档](https://create-react-app.dev/)
-```
-
-这个更新后的文档：
-1. 添加了完整的项目介绍
-2. 包含了详细的环境要求和安装步骤
-3. 提供了清晰的项目结构说明
-4. 列出了主要依赖版本
-5. 添加了组件创建示例
-6. 保留了原有的代码规范、问题解决和学习资源部分
-
-文档结构清晰，既适合新手入门，也方便有经验的开发者快速上手。
