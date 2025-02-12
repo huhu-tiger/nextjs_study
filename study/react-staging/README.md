@@ -93,4 +93,74 @@
   2. useNavigate 只能放在函数组件中
   
 
+## 21 withRouter 使用
+  1. react-router-dom 6.x.x 中使用useNavigate 获取导航函数
+
+## 22 BrowserRouter 与 HashRouter
+   1. BrowserRouter 使用history 模式,不支持低版本浏览器
+   2. HashRouter 使用hash 模式,支持低版本浏览器
+   3. url表现形式不一样
+      BrowserRouter: http://localhost:3000/about
+      HashRouter: http://localhost:3000/#/about
+   4. 刷新页面，BrowserRouter 不会丢失state路由信息，HashRouter 会丢失state路由信息
+   5. HashRouter 可以解决一些路径错误相关问题
+
+## 23 打包
+  1. 使用npm run build 打包
+  2. npm i serve -g 安装serve
+  3. serve -s build 启动服务
+  4. 访问 http://localhost:5000 查看打包结果
+
+## 24 使用Ant Design
+  1. npm i antd 安装antd
+  2. 使用组件
+    <Button type="primary">按钮</Button>
+
+## 25 使用React Hooks
+  1. 使用useState 获取状态
+    const [count, setCount] = useState(0) 
+
+  2. 使用useEffect 获取副作用
+    2.1 在组件内部使用，只监听count的变化
+    useEffect(() => {
+        console.log('count')
+    }, [count])
+
+    2.2 在组件卸载时执行
+    useEffect(() => {
+        return () => {
+            console.log('卸载')
+        }
+    }, [])
+
+    
+
+  3. 使用useRef 获取DOM元素
+    const inputRef = useRef(null)
+    console.log(inputRef.current)
+  4. 使用useContext 获取上下文
+  5. 使用useReducer 获取状态
+  6. 使用useCallback 获取回调函数
+
+
+  ## 26 组件通信方式
+  1. 组件间关系
+    1. 父子组件
+    2. 兄弟组件
+    3. 祖孙组件
+    4. 其他组件
+  2. 组件间通信方式
+    1. props
+    2. 消息订阅-发布 pubsub-js
+    3. 集中式管理
+      redux,dva
+    4. 使用context
+  3. 组件间通信方式选择
+    父子组件：props
+    兄弟组件：消息订阅-发布、集中式管理
+    祖孙组件(跨越多层组件)：集中式管理，context(封装插件用的多)
+
+
+
+
 

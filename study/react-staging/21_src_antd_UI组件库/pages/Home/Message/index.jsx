@@ -20,7 +20,7 @@ function NavigateButton2({ path, state }) {
     const navigate = useNavigate()
     return (
         <>
-        <button onClick={() => navigate(path, { state })} replace={true}>
+        <button onClick={() => navigate(path, { state, replace: true })} >
             replace查看
         </button>
             <button onClick={() => navigate(path, { state })}>
@@ -55,7 +55,7 @@ export default class Message extends Component {
     return (
       <div>
         <ul>
-            <li>
+            
                 {this.state.messageArr.map((msgObj) => {
                     return <li key={msgObj.id}>
                         {/* 使用params 传参 */}
@@ -80,7 +80,7 @@ export default class Message extends Component {
                         <NavigateButton2 path={`/home/message/detail`} state={{id: msgObj.id, title: msgObj.title}} />
                         </li>
                 })}
-            </li>
+            
         </ul>
         <hr/>
         <Routes>
