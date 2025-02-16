@@ -14,17 +14,16 @@ const __dirname = path.dirname(__filename);
 
 // 打包的配置对象
 export default {
-  input: 'src/index.ts', // 入口文件
+  input: './src/index.ts', // 修改为正确的入口文件路径
   output: {
-    file: path.resolve(__dirname, 'dist/bundle.js'), // 出口文件
-    format: 'iife', // 打包格式
-    sourcemap: true, // 生成sourcemap
-
+    file: path.resolve(__dirname, 'dist/bundle.js'),
+    format: 'iife',
+    sourcemap: true,
   },
   plugins: [
     ts({
-        tsconfig: path.resolve(__dirname, 'tsconfig.json'), // 指定tsconfig.json文件
+      tsconfig: path.resolve(__dirname, 'tsconfig.json'),
     }),
-    nodeResolve({extensions: ['.ts', '.js']}), // 第三方包的入口 
+    nodeResolve({extensions: ['.ts', '.tsx', '.js']}),
   ],
 };
