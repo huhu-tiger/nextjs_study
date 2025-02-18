@@ -19,7 +19,10 @@ export default function RootLayout({
   return (
     // 定义基本的 HTML 结构
     <html lang="en">  {/* 设置语言为英文 */}
-      <body className={inter.className}>{children}</body>
+      <body className="bg-white">  {/* 应用 Inter 字体 */}
+        <h1>我是Root Layout</h1>
+        {children}  {/* 渲染传入的子组件 */}
+      </body>
     </html>
   );
 }

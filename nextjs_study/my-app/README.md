@@ -15,3 +15,17 @@ npm run dev
 ```bash
 http://localhost:3000
 ```
+
+
+
+# 学习笔记
+
+## 1. layout 与 template 的区别
+ template 切换路由时状态清空，layout 切换路由时状态不丢失
+
+
+
+
+
+
+

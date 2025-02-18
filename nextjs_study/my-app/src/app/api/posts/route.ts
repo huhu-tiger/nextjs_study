@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import type { Post } from '@/next-dev'
+import type { Post } from '@/types/next-dev'
 
 export async function POST(request: Request) {
   try {
