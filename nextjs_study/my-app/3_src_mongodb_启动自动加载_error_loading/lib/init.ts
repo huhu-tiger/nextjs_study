@@ -16,8 +16,6 @@ export async function initializeServer() {
 
     // 2. 连接数据库
     await db.connect()
-    const res = await db.writeLogin({login: 'admin', password: '123456'})
-    console.log(res)
 
     // 3. 其他初始化操作
     // 例如: 缓存预热、定时任务设置等

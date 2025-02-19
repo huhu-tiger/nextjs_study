@@ -1,6 +1,5 @@
 import mongoose from 'mongoose'
-import { Login } from '../types/next-dev'
-import { Connection } from 'mongoose'
+
 // 数据库连接类
 class Database {
   private static instance: Database
@@ -57,34 +56,6 @@ class Database {
       
       throw error
     }
-  }
-  // 切换数据库
-  async useDb(dbName: string) :Promise<Connection>{
-    return await mongoose.connection.useDb(dbName)
-  }
-  // 断开数据库连接
-  async disconnect(force: boolean = false,con:Connection) {
-    await con.close(force)
-  }
-
-  // 写入登录数据
-  async writeLogin(data: Login): Promise<mongoose.Document | null> {
-    try {
-      console.log(process.env.MONGODB_DB)
-      let con=await this.useDb(process.env.MONGODB_DB || 'mydatabase')
-      const LoginModel = con.model(process.env.LOGIN_COLLECTION || 'logins', new mongoose.Schema({}, { strict: false }))
-      const result = await LoginModel.create(data)
-      return result
-    } catch (error) {
-      console.error('写入登录数据失败:', error)
-      return null
-    }
-  }
-  async readLogin(data: Login): Promise<mongoose.Document[]> {
-    let con = await this.useDb(process.env.MONGODB_DB || 'mydatabase')
-    const LoginModel = con.model(process.env.LOGIN_COLLECTION || 'logins', new mongoose.Schema({}, { strict: false }))
-    const result = await LoginModel.find(data)
-    return result
   }
 
   // 获取数据库连接

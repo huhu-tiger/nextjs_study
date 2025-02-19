@@ -8,8 +8,3 @@ export type Post = {
 };
 
 export type Posts = Post[];
-
-export type Login = {
-  login?: string;
-  password?: string;
-};
