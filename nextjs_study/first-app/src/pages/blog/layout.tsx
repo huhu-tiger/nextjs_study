@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,10 +13,13 @@ export const metadata: Metadata = {
 // 它包装了应用中的所有页面组件
 export default function RootLayout({
   children,  // children 参数接收子组件
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{  // 使用 Readonly 确保 props 类型不可变
+  children: React.ReactNode;  // 定义 children 的类型为 React 节点
+}>) {
   return (
-    <html lang="en"><head /><body className={inter.className}>{children}</body></html>
+    <div>
+      <h1>这里是blog layout 博客布局</h1>
+      {children}
+    </div>
   );
 }

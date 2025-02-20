@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import crypto from 'crypto'
+import { type Login } from '@/types/next-dev'
 
 export async function POST(req: Request) {
-    const { login, password } = await req.json()
+    const { login, password }: Login = await req.json()
     console.log(login, password)
     const res = await db.readLogin({login, password})
     console.log(res)

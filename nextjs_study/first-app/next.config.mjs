@@ -33,7 +33,7 @@ const nextConfig = {
 
     return config;
   },
-
+  reactStrictMode: true,
 };
 
 export default nextConfig;
