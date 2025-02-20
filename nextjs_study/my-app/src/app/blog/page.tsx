@@ -19,62 +19,60 @@ async function getPosts(): Promise<Post[]> {
     })
 
     if (!res.ok) {
-      throw new Error(`Failed to fetch posts: ${res.status}`)
+      throw new Error(`获取文章失败: ${res.status}`)
     }
 
     const data = await res.json()
-    return data.posts || []
+    if (!data.posts) {
+      throw new Error('返回数据格式错误')
+    }
+    return data.posts
 
   } catch (error) {
-    console.error('Error fetching posts:', error)
-    return []
+    console.error('获取文章列表失败:', error)
+    throw error // 抛出错误让 error.tsx 处理
   }
 }
 
 // 页面组件
 export default async function BlogPage() {
-  try {
-    const posts = await getPosts()
-    
-    if (!posts.length) {
-      return (
-        <div className="min-h-screen flex items-center justify-center">
-          <p className="text-gray-500">暂无文章</p>
-        </div>
-      )
-    }
-
+  const posts = await getPosts()
+  
+  if (!posts.length) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-100">
-        <nav className="p-6 bg-white shadow-sm">
-          <Link 
-            href="/" 
-            className="text-indigo-600 hover:text-indigo-800 font-semibold text-lg"
-          >
-            返回首页
-          </Link>
-        </nav>
-        
-        <main className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-8">博客文章</h1>
-          <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => (
-              <li key={post.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                <Link 
-                  href={`/blog/${post.slug}?page=1&sort=desc&category=tech`}
-                  className="block p-6 hover:bg-gray-50"
-                >
-                  <h2 className="text-xl font-semibold text-gray-800 mb-2">{post.title}</h2>
-                  <p className="text-gray-600">点击阅读 →</p>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </main>
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">暂无文章</p>
       </div>
     )
-  } catch (error) {
-    console.error('Blog page error:', error)
-    throw error // 让错误边界处理它
   }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-100">
+      <nav className="p-6 bg-white shadow-sm">
+        <Link 
+          href="/" 
+          className="text-indigo-600 hover:text-indigo-800 font-semibold text-lg"
+        >
+          返回首页
+        </Link>
+      </nav>
+      
+      <main className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">博客文章</h1>
+        <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post) => (
+            <li key={post.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <Link 
+                href={`/blog/${post.slug}`}
+                className="block p-6 hover:bg-gray-50"
+              >
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">{post.title}</h2>
+                <p className="text-gray-600">点击阅读 →</p>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </main>
+    </div>
+  )
 }

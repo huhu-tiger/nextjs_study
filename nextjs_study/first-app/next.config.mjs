@@ -9,7 +9,6 @@ const nextConfig = {
   // 更新中间件配置
   experimental: {
     instrumentationHook: true,
-    serverActions: true
   },
   webpack(config, { isServer, nextRuntime }) {
     Object.assign(config.resolve.alias, {
