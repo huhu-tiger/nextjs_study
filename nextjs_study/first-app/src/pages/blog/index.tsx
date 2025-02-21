@@ -11,7 +11,7 @@ export default function BlogPage() {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const res = await fetch('http://localhost:3000/api/posts', {
+        const res = await fetch('http://127.0.0.1:3000/api/posts', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
