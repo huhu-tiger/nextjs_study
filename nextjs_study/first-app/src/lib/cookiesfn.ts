@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie'
 
 // 获取 cookie 时添加日志
-const getCookie = (name: string) => {
+export const getCookie = (name: string) => {
   const value = Cookies.get(name)
   console.log(`Getting cookie ${name}:`, value)
   return value
