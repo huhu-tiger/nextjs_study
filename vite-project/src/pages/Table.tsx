@@ -1,15 +1,15 @@
 import React from 'react';
 import { Box, Heading, Text, VStack, List, ListItem } from '@chakra-ui/react';
 
-const About: React.FC = () => {
+const TableDemo: React.FC = () => {
     return (
         <Box>
             <VStack spacing={4} align="start">
     <Heading as="h1" size="xl" color="green.600">
-        关于我们
+        表格展示
         </Heading>
         <Text fontSize="lg" color="gray.600">
-        我们是一个专注于前端开发技术的团队。
+            chakra-ui
         </Text>
 
         <Heading as="h2" size="lg" color="blue.600">
@@ -27,4 +27,4 @@ const About: React.FC = () => {
 );
 };
 
-export default About;
+export default TableDemo;

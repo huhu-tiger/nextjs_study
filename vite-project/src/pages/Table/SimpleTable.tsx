@@ -1,80 +1,101 @@
-import React from 'react';
-import { Box, Heading, Text, VStack, SimpleGrid, Card, CardBody, Badge, Button } from '@chakra-ui/react';
+import React, {useEffect, useState} from 'react';
+import {Box, Button, HStack, Input, InputGroup, InputLeftAddon, StackDivider, VStack} from '@chakra-ui/react';
+import {BaseTable} from "./components/BaseTable.tsx";
+import type {Album} from "./typeDefine/Idata";
+import axios from 'axios';
+// 在浏览器或支持ES6模块的环境中
 
-const Software: React.FC = () => {
-    const softwareProducts = [
-        {
-            name: '企业管理系统',
-            description: '全面的企业资源规划解决方案',
-            category: 'ERP',
-            price: '¥99,999',
-            features: ['财务管理', '人力资源', '库存管理']
-        },
-        {
-            name: '客户关系管理',
-            description: '提升客户满意度的CRM系统',
-            category: 'CRM',
-            price: '¥49,999',
-            features: ['客户跟踪', '销售管理', '营销自动化']
-        },
-        {
-            name: '数据分析平台',
-            description: '强大的商业智能分析工具',
-            category: 'BI',
-            price: '¥79,999',
-            features: ['数据可视化', '报表生成', '预测分析']
-        },
-    ];
 
+const baseurl = "http://localhost:3001/api/photos"
+
+const SimpleTable: React.FC = () => {
+    const [isLoading, setLoading] = useState<boolean>(true)
+    const [data, setData] = useState<Album[]>([])
+    const [search, setSearch] = useState('')
+    const [currentPage, setCurrentPage] = useState<number>(1)
+    const [pageSize] = useState<number>(5)
+    const [totalItems, setTotalItems] = useState<number>(0)
+    const [url, seturl] = useState<string>(`${baseurl}?`)
+
+    const buildUrl=():string=>{
+        const init_url =`${baseurl}?page=${currentPage}&limit=${pageSize}`
+        return search ? `${init_url}&search=${encodeURIComponent(search)}` : init_url
+    }
+    useEffect(() => {
+        axios.get(url)
+            .then(response => {
+                console.log(response.data); // 从响应中获取数据
+                const {data: photosData, pagination} = response.data;
+                setData(photosData)
+                setTotalItems(pagination.totalItems) // 从分页信息获取总数
+                setLoading(false)
+            })
+            .catch(error => {
+                console.error(error); // 处理错误
+                setData([])
+                setTotalItems(0)
+                setLoading(false)
+            });
+    }, [url])
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(event.target.value)
+        console.log(event.target.value)
+    }
+    const handleBtnClick: React.MouseEventHandler<HTMLButtonElement> = () => {
+        console.log('点击了按钮');
+        setLoading(true)
+        setCurrentPage(1) // 搜索时重置到第一页
+        // 如果 search 有值，则将其编码后作为 search 查询参数拼接到 URL，否则不添加 search 参数
+        // const searchParam = search ? `&search=${encodeURIComponent(search)}` : ''
+        // seturl(`${baseurl}?page=1&limit=${pageSize}${searchParam}`)
+        seturl(buildUrl())
+        console.log(url)
+    }
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page)
+        setLoading(true)
+        // const searchParam = search ? `&search=${encodeURIComponent(search)}` : ''
+        // seturl(`${baseurl}?page=${page}&limit=${pageSize}${searchParam}`)
+        seturl(buildUrl())
+        console.log(url)
+    }
     return (
-        <Box>
-            <VStack spacing={6} align="start">
-    <Heading as="h1" size="xl" color="green.600">
-        软件产品
-        </Heading>
-        <Text fontSize="lg" color="gray.600">
-        我们提供各种企业级软件解决方案。
-        </Text>
+        <VStack
+            divider={<StackDivider borderColor='gray.200'/>}
+            spacing={4}
+            align='stretch'
+        >
+            <Box display="flex" justifyContent="flex-end" w="100%">
+                <HStack spacing='12px'>
+                    <Box w='260px'>
+                        <InputGroup>
+                            <InputLeftAddon>title</InputLeftAddon>
+                            <Input placeholder='搜索内容输入' onChange={handleChange}/>
+                        </InputGroup>
 
-        <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6} w="100%">
-        {softwareProducts.map((product, index) => (
-                <Card key={index} maxW="sm">
-            <CardBody>
-                <VStack spacing={3} align="start">
-            <Box>
-                <Badge colorScheme="blue" mb={2}>{product.category}</Badge>
-            <Heading size="md">{product.name}</Heading>
+                    </Box>
+                    <Box>
+                        <Button colorScheme='teal' size='md' onClick={handleBtnClick}>
+                            搜索
+                        </Button>
+                    </Box>
+                </HStack>
             </Box>
-
-            <Text color="gray.600">{product.description}</Text>
-
             <Box>
-            <Text fontSize="sm" fontWeight="bold" mb={1}>主要功能：</Text>
-    <VStack spacing={1} align="start">
-        {product.features.map((feature, idx) => (
-                <Text key={idx} fontSize="sm" color="gray.600">
-                          • {feature}
-    </Text>
-))}
-    </VStack>
-    </Box>
-
-    <Box w="100%" display="flex" justifyContent="space-between" alignItems="center">
-    <Text fontSize="lg" fontWeight="bold" color="green.600">
-        {product.price}
-        </Text>
-        <Button size="sm" colorScheme="blue">
-        了解详情
-        </Button>
-        </Box>
+                {/* 通过 props 方式将数据传递给子组件 BaseTable */}
+                <BaseTable
+                    url={url}
+                    data={data}
+                    page={currentPage}
+                    pageSize={pageSize}
+                    isLoading={isLoading}
+                    totalItems={totalItems}
+                    onPageChange={handlePageChange}
+                />
+            </Box>
         </VStack>
-        </CardBody>
-        </Card>
-))}
-    </SimpleGrid>
-    </VStack>
-    </Box>
-);
+    );
 };
 
-export default Software;
+export default SimpleTable;
