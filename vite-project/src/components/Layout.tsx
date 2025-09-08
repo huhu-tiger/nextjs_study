@@ -81,6 +81,8 @@ const Layout: React.FC = () => {
       children: [
         { path: '/transferstate/contextuse', label: '通信useContext' },
         { path: '/transferstate/zustandDemo', label: '通信zustand' },
+        { path: '/transferstate/zustandTable', label: '通信zustandTable' },
+        { path: '/transferstate/zustandImmer', label: '通信zustandImmer' },
       ]
     },
   ];

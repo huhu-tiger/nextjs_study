@@ -30,7 +30,8 @@ import Jisuan from './pages/Study/Jisuan'
 import TransferState from './pages/TransferState';
 import ContextUse from './pages/TransferState/ContextUse';
 import ZustandDemo from './pages/TransferState/ZustandDemo.tsx';
-
+import ZustandTable from './pages/TransferState/TableDemo/ZustandTable';
+import ZustandImmer from './pages/TransferState/ZustandImmer'
 function App() {
   return (
     <ChakraProvider>
@@ -67,6 +68,8 @@ function App() {
             <Route path="transferstate" element={<TransferState />} />
             <Route path="transferstate/contextuse" element={<ContextUse  />}/>
             <Route path="transferstate/zustandDemo" element={<ZustandDemo  />}/>
+            <Route path="transferstate/zustandTable" element={<ZustandTable  />}/>
+            <Route path="transferstate/zustandImmer" element={<ZustandImmer  />}/>
           </Route>
         </Routes>
       </Router>
