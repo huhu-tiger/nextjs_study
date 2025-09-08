@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { withCors } from '../../_middleware';
+
 
 function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -71,4 +71,4 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
   res.status(200).send(svg);
 }
 
-export default withCors(handler);
+export default handler;

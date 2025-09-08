@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type {AdvancedPaginationParams, AdvancedResult} from "../../../public/tableInterface";
+import type {AdvancedPaginationParams, AdvancedResult, Photo} from "../../../public/tableInterface";
 
 // 扩展的模拟数据
-const mockPhotos = Array.from({ length: 500 }, (_, index) => ({
+const mockPhotos: Photo[] = Array.from({ length: 500 }, (_, index) => ({
   albumId: Math.floor(index / 20) + 1,
   id: index + 1,
   title: `Photo ${index + 1} - ${getRandomTitle()}`,

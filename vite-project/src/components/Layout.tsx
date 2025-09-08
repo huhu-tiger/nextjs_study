@@ -67,6 +67,22 @@ const Layout: React.FC = () => {
         { path: '/table/advancedtable', label: '高级表格' },
       ]
     },
+        {
+      path: '/study',
+      label: '学习',
+      children: [
+        { path: '/study/miaobiao', label: '秒表' },
+        { path: '/study/jisuan', label: '计算' },
+      ]
+    },  
+    {
+      path: '/transferstate',
+      label: '组件通信',
+      children: [
+        { path: '/transferstate/contextuse', label: '通信useContext' },
+        { path: '/transferstate/zustandDemo', label: '通信zustand' },
+      ]
+    },
   ];
 
   const handleNavigation = (path: string) => {

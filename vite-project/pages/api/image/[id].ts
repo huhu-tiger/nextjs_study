@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { withCors } from '../_middleware';
+
 
 function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -48,4 +48,4 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
   res.redirect(302, placeholderUrl);
 }
 
-export default withCors(handler);
+export default handler;

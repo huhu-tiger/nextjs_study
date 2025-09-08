@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zustand 基础示例</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/zustand@4.4.7/dist/zustand.umd.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { create } = zustand;
+        const { useState, useEffect } = React;
+
+        // 1. 基础状态定义
+        const useCounterStore = create((set) => ({
+            count: 0,
+            increment: () => set((state) => ({ count: state.count + 1 })),
+            decrement: () => set((state) => ({ count: state.count - 1 })),
+            reset: () => set({ count: 0 }),
+        }));
+
+        // 2. 用户状态定义
+        const useUserStore = create((set) => ({
+            user: null,
+            isLoading: false,
+            error: null,
+            login: (userData) => set({ 
+                user: { id: Date.now().toString(), ...userData },
+                error: null 
+            }),
+            logout: () => set({ user: null, error: null }),
+            setLoading: (loading) => set({ isLoading: loading }),
+            setError: (error) => set({ error }),
+        }));
+
+        // 3. 计数器组件
+        function Counter() {
+            const { count, increment, decrement, reset } = useCounterStore();
+            
+            return (
+                <div className="container">
+                    <h3>计数器示例</h3>
+                    <p>当前计数: {count}</p>
+                    <button onClick={increment}>+</button>
+                    <button onClick={decrement}>-</button>
+                    <button onClick={reset}>重置</button>
+                </div>
+            );
+        }
+
+        // 4. 选择器示例组件
+        function CountDisplay() {
+            const count = useCounterStore((state) => state.count);
+            
+            console.log('CountDisplay 重新渲染');
+            
+            return (
+                <div className="container">
+                    <h3>选择器示例 - 只订阅计数</h3>
+                    <p>当前计数: {count}</p>
+                </div>
+            );
+        }
+
+        // 5. 用户管理组件
+        function UserManager() {
+            const { user, isLoading, error, login, logout, setLoading, setError } = useUserStore();
+            const [loginForm, setLoginForm] = useState({ name: '', email: '' });
+            
+            const handleLogin = () => {
+                if (loginForm.name && loginForm.email) {
+                    setLoading(true);
+                    setError(null);
+                    
+                    // 模拟异步登录
+                    setTimeout(() => {
+                        login(loginForm);
+                        setLoading(false);
+                        setLoginForm({ name: '', email: '' });
+                    }, 1000);
+                }
+            };
+            
+            const handleLogout = () => {
+                logout();
+            };
+            
+            if (isLoading) {
+                return (
+                    <div className="container">
+                        <h3>用户管理</h3>
+                        <div>登录中...</div>
+                    </div>
+                );
+            }
+            
+            return (
+                <div className="container">
+                    <h3>用户管理示例</h3>
+                    {error && <div style={{ color: 'red' }}>错误: {error}</div>}
+                    
+                    {user ? (
+                        <div>
+                            <p>欢迎, {user.name}!</p>
+                            <p>邮箱: {user.email}</p>
+                            <button onClick={handleLogout}>登出</button>
+                        </div>
+                    ) : (
+                        <div>
+                            <p>未登录</p>
+                            <div>
+                                <input
+                                    type="text"
+                                    placeholder="姓名"
+                                    value={loginForm.name}
+                                    onChange={(e) => setLoginForm(prev => ({ ...prev, name: e.target.value }))}
+                                />
+                                <input
+                                    type="email"
+                                    placeholder="邮箱"
+                                    value={loginForm.email}
+                                    onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
+                                />
+                                <button onClick={handleLogin}>登录</button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // 6. 计算属性示例
+        function UserInfo() {
+            const userInfo = useUserStore((state) => ({
+                isLoggedIn: !!state.user,
+                userName: state.user?.name || 'Guest',
+                userEmail: state.user?.email || '',
+            }));
+            
+            return (
+                <div className="container">
+                    <h3>计算属性示例</h3>
+                    <p>登录状态: {userInfo.isLoggedIn ? '已登录' : '未登录'}</p>
+                    <p>用户名: {userInfo.userName}</p>
+                    <p>邮箱: {userInfo.userEmail}</p>
+                </div>
+            );
+        }
+
+        // 7. 主应用组件
+        function App() {
+            return (
+                <div>
+                    <h1>Zustand 基础示例</h1>
+                    <Counter />
+                    <CountDisplay />
+                    <UserManager />
+                    <UserInfo />
+                </div>
+            );
+        }
+
+        // 渲染应用
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

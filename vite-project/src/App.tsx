@@ -21,6 +21,15 @@ import Feedback from './pages/Contact/Feedback';
 import SimpleTable from './pages/Table/SimpleTable.tsx'
 import AdvancedTable from './pages/Table/AdvancedTable.tsx'
 import TableDemo from './pages/Table'
+// Study
+import StudyDemo from './pages/Study.tsx';
+import Miaobiao from './pages/Study/Miaobiao.tsx';
+import Jisuan from './pages/Study/Jisuan'
+
+// transfer state
+import TransferState from './pages/TransferState';
+import ContextUse from './pages/TransferState/ContextUse';
+import ZustandDemo from './pages/TransferState/ZustandDemo.tsx';
 
 function App() {
   return (
@@ -50,6 +59,14 @@ function App() {
             <Route path="table/simpletable" element={<SimpleTable />} />
             <Route path="table/advancedtable" element={<AdvancedTable />} />
 
+            {/* Study Routes */}
+            <Route path="study" element={<StudyDemo />} />
+            <Route path="study/miaobiao" element={<Miaobiao />} />
+            <Route path="study/jisuan" element={<Jisuan  />}/>
+
+            <Route path="transferstate" element={<TransferState />} />
+            <Route path="transferstate/contextuse" element={<ContextUse  />}/>
+            <Route path="transferstate/zustandDemo" element={<ZustandDemo  />}/>
           </Route>
         </Routes>
       </Router>
