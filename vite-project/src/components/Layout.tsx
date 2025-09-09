@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Grid,
   GridItem,
@@ -83,6 +83,7 @@ const Layout: React.FC = () => {
         { path: '/transferstate/zustandDemo', label: '通信zustand' },
         { path: '/transferstate/zustandTable', label: '通信zustandTable' },
         { path: '/transferstate/zustandImmer', label: '通信zustandImmer' },
+        { path: '/transferstate/zustandStore', label: '通信zustandStore' },
       ]
     },
   ];
@@ -98,6 +99,32 @@ const Layout: React.FC = () => {
         : [...prev, path]
     );
   };
+
+  // 根据当前路径自动展开对应的一级菜单
+  useEffect(() => {
+    const currentPath = location.pathname;
+    
+    // 找到当前路径对应的一级菜单
+    const parentMenu = menuItems.find(item => 
+      item.children && item.children.some(child => 
+        currentPath.startsWith(child.path)
+      )
+    );
+    
+    if (parentMenu) {
+      // 只展开当前路径对应的一级菜单，收起其他菜单
+      setExpandedMenus([parentMenu.path]);
+    } else {
+      // 如果当前路径是一级菜单本身，也展开它
+      const directMenu = menuItems.find(item => item.path === currentPath);
+      if (directMenu && directMenu.children) {
+        setExpandedMenus([directMenu.path]);
+      } else {
+        // 如果都不是，清空展开状态
+        setExpandedMenus([]);
+      }
+    }
+  }, [location.pathname]);
 
   const isMenuExpanded = (path: string) => expandedMenus.includes(path);
 

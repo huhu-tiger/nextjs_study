@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type {Photo, PaginationParams, SimpleResult} from "../../public/tableInterface"
+import type {Photo, PaginationParams, SimpleResult} from "../../public/type.d"
 // 模拟数据
 const mockPhotos = Array.from({ length: 100 }, (_, index) => ({
   albumId: Math.floor(index / 10) + 1,

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type {AdvancedPaginationParams, AdvancedResult, Photo} from "../../../public/tableInterface";
+import type {AdvancedPaginationParams, AdvancedResult, Photo} from "../../../public/type.d";
 
 // 扩展的模拟数据
 const mockPhotos: Photo[] = Array.from({ length: 500 }, (_, index) => ({
