@@ -86,6 +86,14 @@ const Layout: React.FC = () => {
         { path: '/transferstate/zustandStore', label: '通信zustandStore' },
       ]
     },
+    {
+      path: '/tankquery',
+      label: 'tankquery',
+      children: [
+        { path: '/tankquery/tankquerybase', label: 'tankquery基础' },
+
+      ]
+    },
   ];
 
   const handleNavigation = (path: string) => {

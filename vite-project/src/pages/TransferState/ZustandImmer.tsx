@@ -1,12 +1,13 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
-import {HStack, Input} from '@chakra-ui/react'
+import {HStack} from '@chakra-ui/react'
 import React from 'react'
-import { Button,Box,VStack } from '@chakra-ui/react'
+import { Button ,VStack } from '@chakra-ui/react'
 import {
     Stat,
     StatLabel,
 } from '@chakra-ui/react'
+import {devtools} from "zustand/middleware";
 
 interface State {
     count:number
@@ -25,21 +26,17 @@ interface State {
 // })
 
 const useStore = create<State>()(
-    immer((set) => ({
-        count: 0,
-        increment: (num) =>
-            set((state) => {
-                state.count += num
-            }),
-        decrement: (num) =>
-            set((state) => {
-                state.count -= num
-            }),
-        reset: () =>
-            set({
-                count: 0,
-            }),
-    })),
+    devtools(
+    immer(
+        (set)=>({
+            count:0,
+            increment:()=>(set((state)=>({count:state.count+1}))),
+            decrement:()=>(set((state)=>({count:state.count-1}))),
+            reset:()=>(set({count:0}))
+        })
+
+    )
+    )
 )
 
 const ZustandImmer:React.FC=()=>{

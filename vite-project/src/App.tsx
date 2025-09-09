@@ -33,6 +33,10 @@ import ZustandDemo from './pages/TransferState/Zustanddemo.tsx';
 import ZustandTable from './pages/TransferState/TableDemo/ZustandTable';
 import ZustandImmer from './pages/TransferState/ZustandImmer'
 import ZustandStore from './pages/TransferState/ZustandStore.tsx';
+
+// TankQuery
+import TankQuery from "./pages/TankQuery";
+import TankQueryBase from "./pages/TankQuery/TankQueryBase";
 function App() {
   return (
     <ChakraProvider>
@@ -72,6 +76,9 @@ function App() {
             <Route path="transferstate/zustandTable" element={<ZustandTable  />}/>
             <Route path="transferstate/zustandImmer" element={<ZustandImmer  />}/>
             <Route path="transferstate/zustandStore" element={<ZustandStore />}/>
+            <Route path="tankquery" element={<TankQuery />} />
+            <Route path="tankquery/tankquerybase" element={<TankQueryBase  />}/>
+
           </Route>
         </Routes>
       </Router>
