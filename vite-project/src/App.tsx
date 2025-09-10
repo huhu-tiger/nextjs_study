@@ -37,24 +37,27 @@ import ZustandStore from './pages/TransferState/ZustandStore.tsx';
 // TankQuery
 import TankQuery from "./pages/TankQuery";
 import TankQueryBase from "./pages/TankQuery/TankQueryBase";
-function App() {
+import TankQueryProviderBase from "./components/ProviderClient";
+
+
+function App(): JSX.Element {
   return (
     <ChakraProvider>
       <Router>
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
-            
+
             {/* About Routes */}
             <Route path="about" element={<About />} />
             <Route path="about/team" element={<Team />} />
             <Route path="about/history" element={<History />} />
-            
+
             {/* Products Routes */}
             <Route path="products" element={<Products />} />
             <Route path="products/software" element={<Software />} />
             <Route path="products/services" element={<Services />} />
-            
+
             {/* Contact Routes */}
             <Route path="contact" element={<Contact />} />
             <Route path="contact/support" element={<Support />} />
@@ -68,16 +71,16 @@ function App() {
             {/* Study Routes */}
             <Route path="study" element={<StudyDemo />} />
             <Route path="study/miaobiao" element={<Miaobiao />} />
-            <Route path="study/jisuan" element={<Jisuan  />}/>
+            <Route path="study/jisuan" element={<Jisuan />} />
 
             <Route path="transferstate" element={<TransferState />} />
-            <Route path="transferstate/contextuse" element={<ContextUse  />}/>
-            <Route path="transferstate/zustandDemo" element={<ZustandDemo  />}/>
-            <Route path="transferstate/zustandTable" element={<ZustandTable  />}/>
-            <Route path="transferstate/zustandImmer" element={<ZustandImmer  />}/>
-            <Route path="transferstate/zustandStore" element={<ZustandStore />}/>
+            <Route path="transferstate/contextuse" element={<ContextUse />} />
+            <Route path="transferstate/zustandDemo" element={<ZustandDemo />} />
+            <Route path="transferstate/zustandTable" element={<ZustandTable />} />
+            <Route path="transferstate/zustandImmer" element={<ZustandImmer />} />
+            <Route path="transferstate/zustandStore" element={<ZustandStore />} />
             <Route path="tankquery" element={<TankQuery />} />
-            <Route path="tankquery/tankquerybase" element={<TankQueryBase  />}/>
+            <Route path="tankquery/tankquerybase" element={<TankQueryBase />} />
 
           </Route>
         </Routes>
@@ -86,4 +89,11 @@ function App() {
   );
 }
 
-export default App;
+
+
+
+export default () => (
+  <TankQueryProviderBase>
+    <App />
+  </TankQueryProviderBase>
+);

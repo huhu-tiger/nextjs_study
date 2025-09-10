@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { 
-    Box, 
-    Input, 
-    VStack, 
-    HStack, 
-    Button, 
+import {
+    Box,
+    Input,
+    VStack,
+    HStack,
+    Button,
     StackDivider,
     Select,
     Text,
@@ -12,39 +12,24 @@ import {
     Flex,
     Spacer
 } from '@chakra-ui/react';
-import { BaseTable } from "./components/BaseTable";
-import type { Album } from "./typeDefine/Idata";
+import {
+  Alert,
+  AlertIcon,
+  Collapse,
+  AlertDescription,
+} from '@chakra-ui/react'
+import { AdvancedBaseTable } from "./components/AdvancedBaseTable";
+import type { AdvancedFinalResult, AdvancedResult,Photo } from "../../../public/type.d"
 import axios from 'axios';
+import { error } from 'console';
 
 const baseurl = "http://localhost:3001/api/photos/advanced";
 
-interface ApiResponse {
-    data: Album[];
-    pagination: {
-        currentPage: number;
-        totalPages: number;
-        totalItems: number;
-        itemsPerPage: number;
-        hasNextPage: boolean;
-        hasPrevPage: boolean;
-    };
-    filters: {
-        search: string;
-        category: string;
-        sortBy: string;
-        sortOrder: string;
-    };
-    metadata: {
-        availableCategories: string[];
-        totalPhotos: number;
-        filteredCount: number;
-    };
-}
-
 const AdvancedTable: React.FC = () => {
     const [isLoading, setLoading] = useState<boolean>(true);
-    const [data, setData] = useState<Album[]>([]);
+    const [data, setData] = useState<Photo[]>([]);
     const [search, setSearch] = useState('');
+    const [isSearch,setIsSearch] = useState<number>(0)
     const [category, setCategory] = useState('');
     const [sortBy, setSortBy] = useState('id');
     const [sortOrder, setSortOrder] = useState('asc');
@@ -54,11 +39,18 @@ const AdvancedTable: React.FC = () => {
     const [availableCategories, setAvailableCategories] = useState<string[]>([]);
     const [url, setUrl] = useState<string>(`${baseurl}?page=1&limit=10`);
 
-    useEffect(() => {
+    // 动态状态
+    const [alertStatus, setAlertStatus] = useState<"success" | "error" | "warning" | "info">("success");
+    const [alertMessage, setAlertMessage] = useState("There was an error processing your request");
+    const [showAlter, setShowAlter] = useState(false);
+
+    const runQuery = ()=>{
         axios.get(url)
             .then(response => {
                 console.log(response.data);
-                const apiResponse: ApiResponse = response.data;
+                const apiResponseData: AdvancedFinalResult = response.data;
+                console.log(apiResponseData)
+                const apiResponse = apiResponseData.data as AdvancedResult
                 setData(apiResponse.data);
                 setTotalItems(apiResponse.pagination.totalItems);
                 setAvailableCategories(apiResponse.metadata.availableCategories);
@@ -70,7 +62,10 @@ const AdvancedTable: React.FC = () => {
                 setTotalItems(0);
                 setLoading(false);
             });
-    }, [url]);
+    }
+    useEffect(() => {
+        runQuery()
+    }, [isSearch]);
 
     const buildUrl = (page: number, searchTerm: string, categoryFilter: string, sortField: string, sortDirection: string) => {
         const params = new URLSearchParams({
@@ -86,16 +81,54 @@ const AdvancedTable: React.FC = () => {
         return `${baseurl}?${params.toString()}`;
     };
 
+    //删除
+    const handleDelete = (id:number)=>{
+        axios({
+            method: 'post',
+            url: `${url}`,
+            data: {
+                id: id
+            }
+        }).then(response => {
+                console.log(response.data);
+                const apiResponseData: AdvancedFinalResult = response.data;
+                console.log(apiResponseData)
+    
+                setAlertMessage(apiResponseData.message)
+                apiResponseData.code == 0 ? setAlertStatus('success') : setAlertStatus("error")
+
+                runQuery()
+                setIsSearch((prev)=>{
+                    return prev + 1
+                })
+                setAlertMessage('delete success')
+                setAlertStatus("success")
+                setShowAlter(true)
+
+            })
+            .catch(error => {
+                console.error(error);
+                setAlertStatus("error")
+                setAlertMessage(error.message)
+            });
+    }
+
     const handleSearch = () => {
         setLoading(true);
         setCurrentPage(1);
         setUrl(buildUrl(1, search, category, sortBy, sortOrder));
+        setIsSearch((prev)=>{
+            return prev + 1
+        })
     };
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
         setLoading(true);
         setUrl(buildUrl(page, search, category, sortBy, sortOrder));
+        setIsSearch((prev)=>{
+            return prev + 1
+        })
     };
 
     const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -104,6 +137,9 @@ const AdvancedTable: React.FC = () => {
         setLoading(true);
         setCurrentPage(1);
         setUrl(buildUrl(1, search, newCategory, sortBy, sortOrder));
+        setIsSearch((prev)=>{
+            return prev + 1
+        })
     };
 
     const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -112,6 +148,9 @@ const AdvancedTable: React.FC = () => {
         setLoading(true);
         setCurrentPage(1);
         setUrl(buildUrl(1, search, category, newSortBy, sortOrder));
+        setIsSearch((prev)=>{
+            return prev + 1
+        })
     };
 
     const handleSortOrderChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -120,6 +159,9 @@ const AdvancedTable: React.FC = () => {
         setLoading(true);
         setCurrentPage(1);
         setUrl(buildUrl(1, search, category, sortBy, newSortOrder));
+        setIsSearch((prev)=>{
+            return prev + 1
+        })
     };
 
     const clearFilters = () => {
@@ -130,6 +172,9 @@ const AdvancedTable: React.FC = () => {
         setLoading(true);
         setCurrentPage(1);
         setUrl(buildUrl(1, '', '', 'id', 'asc'));
+        setIsSearch((prev)=>{
+            return prev + 1
+        })
     };
 
     return (
@@ -144,8 +189,8 @@ const AdvancedTable: React.FC = () => {
                     {/* 搜索行 */}
                     <Flex gap={4} align="center">
                         <Box flex="1">
-                            <Input 
-                                placeholder='搜索照片标题或ID' 
+                            <Input
+                                placeholder='搜索照片标题或ID'
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -163,8 +208,8 @@ const AdvancedTable: React.FC = () => {
                     <HStack spacing={4} align="center">
                         <Box>
                             <Text fontSize="sm" mb={1}>分类:</Text>
-                            <Select 
-                                value={category} 
+                            <Select
+                                value={category}
                                 onChange={handleCategoryChange}
                                 placeholder="所有分类"
                                 size="sm"
@@ -178,8 +223,8 @@ const AdvancedTable: React.FC = () => {
 
                         <Box>
                             <Text fontSize="sm" mb={1}>排序字段:</Text>
-                            <Select 
-                                value={sortBy} 
+                            <Select
+                                value={sortBy}
                                 onChange={handleSortChange}
                                 size="sm"
                                 w="120px"
@@ -194,8 +239,8 @@ const AdvancedTable: React.FC = () => {
 
                         <Box>
                             <Text fontSize="sm" mb={1}>排序方向:</Text>
-                            <Select 
-                                value={sortOrder} 
+                            <Select
+                                value={sortOrder}
                                 onChange={handleSortOrderChange}
                                 size="sm"
                                 w="100px"
@@ -215,16 +260,23 @@ const AdvancedTable: React.FC = () => {
                     </HStack>
                 </VStack>
             </Box>
-
+            
+            <Collapse in={showAlter} animateOpacity>
+                <Alert status={alertStatus} w="100%">
+                        <AlertIcon />
+                        {alertMessage}
+                    </Alert>
+            </Collapse>
             {/* 表格区域 */}
             <Box>
-                <BaseTable 
-                    url={url} 
-                    data={data} 
-                    page={currentPage} 
-                    pageSize={pageSize} 
+                <AdvancedBaseTable
+                    url={url}
+                    data={data}
+                    page={currentPage}
+                    pageSize={pageSize}
                     isLoading={isLoading}
                     totalItems={totalItems}
+                    handleDelete={handleDelete}
                     onPageChange={handlePageChange}
                 />
             </Box>

@@ -13,12 +13,13 @@ type Album = typeof data
 
 interface IProps {
     url: string
-    data: Album[]
+    data: any[]
     page: number,
     pageSize: number
     isLoading: boolean
     totalItems: number
     onPageChange: (page: number) => void
+    handleDelete: (id: number) => void
 }
 
 export type {Album,IProps}

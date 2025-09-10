@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type {AdvancedPaginationParams, AdvancedResult, Photo} from "../../../public/type.d";
+import type {AdvancedPaginationParams, AdvancedResult,AdvancedFinalResult, Photo, DeleteParams} from "../../../public/type.d";
 
 // 扩展的模拟数据
-const mockPhotos: Photo[] = Array.from({ length: 500 }, (_, index) => ({
+let mockPhotos: Photo[] = Array.from({ length: 100 }, (_, index) => ({
   albumId: Math.floor(index / 20) + 1,
   id: index + 1,
   title: `Photo ${index + 1} - ${getRandomTitle()}`,
@@ -50,8 +50,68 @@ function getRandomTags() {
 
 
 function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ message: 'Method not allowed' });
+  console.log(req.method)
+  if (req.method == 'POST') {
+    const { id } = req.body;
+    const photoId = parseInt(id as string, 10);
+    
+    if (isNaN(photoId)) {
+      const result: AdvancedFinalResult = {
+        code: 1,
+        message: 'Invalid photo ID',
+      }
+      res.status(400).json(result);
+      return;
+    }
+    
+    const photoExists = mockPhotos.some(photo => photo.id === photoId);
+    if (!photoExists) {
+      const result: AdvancedFinalResult = {
+        code: 1,
+        message: 'Photo not found',
+      }
+      res.status(404).json(result);
+      return;
+    }
+    
+    mockPhotos = mockPhotos.filter(photo => photo.id !== photoId);
+    const result: AdvancedFinalResult = {
+      code: 0,
+      message: 'Photo deleted successfully',
+    }
+    res.status(200).json(result);
+    return;
+  }
+  if (req.method == 'PUT'){
+        const { id, title } = req.body;
+        const photoId = parseInt(id as string, 10);
+    
+        if (isNaN(photoId)) {
+          const result: AdvancedFinalResult = {
+            code: 1,
+            message: 'Invalid photo ID',
+          }
+          res.status(400).json(result);
+          return;
+        }
+        
+        const photoExists = mockPhotos.some(photo => photo.id === photoId);
+        if (!photoExists) {
+          const result: AdvancedFinalResult = {
+            code: 1,
+            message: 'Photo not found',
+          }
+          res.status(404).json(result);
+          return;
+        }
+        
+        mockPhotos = mockPhotos.filter(photo => photo.id !== photoId);
+        const result: AdvancedFinalResult = {
+          code: 0,
+          message: 'Photo modify successfully',
+        }
+        res.status(200).json(result);
+        return;
   }
 
   const { 
@@ -70,17 +130,22 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
 
   // 验证参数
   if (isNaN(pageNum) || isNaN(limitNum) || pageNum < 1 || limitNum < 1) {
-    return res.status(400).json({ 
+
+    const result:AdvancedFinalResult = {
+      code:1,
       message: 'Invalid pagination parameters',
-      error: 'Page and limit must be positive numbers'
-    });
+    }
+    res.status(400).json(result);
+
   }
 
   if (limitNum > 100) {
-    return res.status(400).json({ 
+    const result:AdvancedFinalResult = {
+      code:1,
       message: 'Limit too high',
-      error: 'Maximum limit is 100'
-    });
+    }
+    res.status(400).json(result);
+
   }
 
   // 过滤数据
@@ -153,8 +218,13 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
       filteredCount: totalItems,
     },
   }
+  const finalResult:AdvancedFinalResult = {
+    code: 0,
+    message: 'Success',
+    data: result,
+  }
   // 返回响应
-  res.status(200).json(result);
+  res.status(200).json(finalResult);
 }
 
 export default handler;

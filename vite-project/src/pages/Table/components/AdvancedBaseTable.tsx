@@ -9,18 +9,19 @@ import {
     TableContainer,
     Spinner,
     HStack,
-    Button,
     Text,
     Box,
     VStack,
 } from '@chakra-ui/react'
+import { Stack, Button, ButtonGroup } from '@chakra-ui/react'
 import React from "react";
-import type { IProps} from "../typeDefine/Idata";
+import type { IProps } from "../typeDefine/Idata";
+import type { Photo } from '../../../../public/type.d';
 
 
-export const BaseTable: React.FC<IProps> = (props) => {
-    const {data, page, pageSize, totalItems, isLoading, onPageChange} = props;
-
+export const AdvancedBaseTable: React.FC<IProps> = (props) => {
+    const { data, page, pageSize, totalItems, isLoading, onPageChange, handleDelete } = props;
+    console.log(isLoading)
     // 计算总页数
     const totalPages = Math.ceil(totalItems / pageSize);
 
@@ -47,7 +48,7 @@ export const BaseTable: React.FC<IProps> = (props) => {
     if (isLoading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" h="200px">
-                <Spinner size="xl" color="teal.500"/>
+                <Spinner size="xl" color="teal.500" />
             </Box>
         );
     }
@@ -63,10 +64,11 @@ export const BaseTable: React.FC<IProps> = (props) => {
                             <Th>标题</Th>
                             <Th>URL</Th>
                             <Th>缩略图</Th>
+                            <Th>操作</Th>
                         </Tr>
                     </Thead>
                     <Tbody>
-                        {data.map((item: Album) => (
+                        {data.map((item: Photo) => (
                             <Tr key={item.id}>
                                 <Td>{item.id}</Td>
                                 <Td maxW="200px" isTruncated>{item.title}</Td>
@@ -77,10 +79,20 @@ export const BaseTable: React.FC<IProps> = (props) => {
                                 </Td>
                                 <Td>
                                     <Box w="50px" h="50px" bg="gray.100" borderRadius="md"
-                                         backgroundImage={`url(${item.thumbnailUrl})`}
-                                         backgroundSize="cover"
-                                         backgroundPosition="center"
+                                        backgroundImage={`url(${item.thumbnailUrl})`}
+                                        backgroundSize="cover"
+                                        backgroundPosition="center"
                                     />
+                                </Td>
+                                <Td>
+                                    <Stack spacing={4} direction='row' align='center'>
+                                        <Button colorScheme='yellow' size='sm' onClick={()=>handleDelete(item.id)}>
+                                            删除
+                                        </Button>
+                                        <Button colorScheme='teal' size='sm'>
+                                            修改
+                                        </Button>
+                                    </Stack>
                                 </Td>
                             </Tr>
                         ))}

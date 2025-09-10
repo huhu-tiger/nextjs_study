@@ -13,6 +13,7 @@ type Photo = {
 export type {Photo}
 
 // 高级表格
+// 查询请求参数
 interface AdvancedPaginationParams {
     page?: string;
     limit?: string;
@@ -23,7 +24,20 @@ interface AdvancedPaginationParams {
 }
 
 export type {AdvancedPaginationParams}
+// 删除请求参数
+type DeleteParams = {
+    id: number;
+}
+export type {DeleteParams}
 
+
+// 高级表格通用查询返回参数
+type AdvancedFinalResult = {
+    code: 0 | 1 ;
+    message: string;
+    data?: any
+}
+export type {AdvancedFinalResult}
 
 type AdvancedResult = {
     data: Photo[];
