@@ -12,15 +12,16 @@ import {
     Text,
     Box,
     VStack,
+    Input,
 } from '@chakra-ui/react'
-import { Stack, Button, ButtonGroup } from '@chakra-ui/react'
+import { Stack, Button } from '@chakra-ui/react'
 import React from "react";
 import type { IProps } from "../typeDefine/Idata";
 import type { Photo } from '../../../../public/type.d';
 
 
 export const AdvancedBaseTable: React.FC<IProps> = (props) => {
-    const { data, page, pageSize, totalItems, isLoading, onPageChange, handleDelete } = props;
+    const { data, page, pageSize, totalItems, isLoading, onPageChange, handleDelete, handleModify, editingId, editingTitle, setEditingTitle, handleCancelEdit } = props;
     console.log(isLoading)
     // 计算总页数
     const totalPages = Math.ceil(totalItems / pageSize);
@@ -71,7 +72,27 @@ export const AdvancedBaseTable: React.FC<IProps> = (props) => {
                         {data.map((item: Photo) => (
                             <Tr key={item.id}>
                                 <Td>{item.id}</Td>
-                                <Td maxW="200px" isTruncated>{item.title}</Td>
+                                <Td maxW="200px">
+                                    {editingId === item.id ? (
+                                        <Input
+                                            value={editingTitle}
+                                            onChange={(e) => setEditingTitle(e.target.value)}
+                                            size="sm"
+                                            placeholder="请输入标题"
+                                            onKeyPress={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    handleModify(item.id, editingTitle);
+                                                }
+                                                if (e.key === 'Escape') {
+                                                    handleCancelEdit();
+                                                }
+                                            }}
+                                            autoFocus
+                                        />
+                                    ) : (
+                                        <Text isTruncated>{item.title}</Text>
+                                    )}
+                                </Td>
                                 <Td maxW="150px" isTruncated>
                                     <Text fontSize="sm" color="blue.500" isTruncated>
                                         {item.url}
@@ -85,13 +106,31 @@ export const AdvancedBaseTable: React.FC<IProps> = (props) => {
                                     />
                                 </Td>
                                 <Td>
-                                    <Stack spacing={4} direction='row' align='center'>
-                                        <Button colorScheme='yellow' size='sm' onClick={()=>handleDelete(item.id)}>
+                                    <Stack spacing={2} direction='row' align='center'>
+                                        <Button 
+                                            colorScheme='yellow' 
+                                            size='sm' 
+                                            onClick={()=>handleDelete(item.id)}
+                                            isDisabled={editingId === item.id}
+                                        >
                                             删除
                                         </Button>
-                                        <Button colorScheme='teal' size='sm'>
-                                            修改
+                                        <Button 
+                                            colorScheme={editingId === item.id ? 'green' : 'teal'} 
+                                            size='sm' 
+                                            onClick={()=>{handleModify(item.id, item.title)}}
+                                        >
+                                            {editingId === item.id ? '保存' : '修改'}
                                         </Button>
+                                        {editingId === item.id && (
+                                            <Button 
+                                                colorScheme='gray' 
+                                                size='sm' 
+                                                onClick={handleCancelEdit}
+                                            >
+                                                取消
+                                            </Button>
+                                        )}
                                     </Stack>
                                 </Td>
                             </Tr>

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type {AdvancedPaginationParams, AdvancedResult,AdvancedFinalResult, Photo, DeleteParams} from "../../../public/type.d";
+import type {AdvancedPaginationParams, AdvancedResult,AdvancedFinalResult, Photo, DeleteParams} from "../../../../public/type.d";
 
 // 扩展的模拟数据
 let mockPhotos: Photo[] = Array.from({ length: 100 }, (_, index) => ({
@@ -51,7 +51,7 @@ function getRandomTags() {
 
 function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log(req.method)
-  if (req.method == 'POST') {
+  if (req.method == 'DELETE') {
     const { id } = req.body;
     const photoId = parseInt(id as string, 10);
     
@@ -105,7 +105,9 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
           return;
         }
         
-        mockPhotos = mockPhotos.filter(photo => photo.id !== photoId);
+        mockPhotos = mockPhotos.map(photo => 
+          photo.id === photoId ? { ...photo, title: title } : photo
+        );
         const result: AdvancedFinalResult = {
           code: 0,
           message: 'Photo modify successfully',

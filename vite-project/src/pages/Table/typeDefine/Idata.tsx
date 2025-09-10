@@ -20,6 +20,11 @@ interface IProps {
     totalItems: number
     onPageChange: (page: number) => void
     handleDelete: (id: number) => void
+    handleModify: (id: number,title: string) => void
+    editingId: number | null
+    editingTitle: string
+    setEditingTitle: (title: string) => void
+    handleCancelEdit: () => void
 }
 
 export type {Album,IProps}

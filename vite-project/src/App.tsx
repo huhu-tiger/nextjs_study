@@ -42,7 +42,7 @@ import TankQueryProviderBase from "./components/ProviderClient";
 
 function App(): JSX.Element {
   return (
-    <ChakraProvider>
+
       <Router>
         <Routes>
           <Route path="/" element={<Layout />}>
@@ -85,7 +85,7 @@ function App(): JSX.Element {
           </Route>
         </Routes>
       </Router>
-    </ChakraProvider>
+
   );
 }
 
@@ -93,7 +93,9 @@ function App(): JSX.Element {
 
 
 export default () => (
-  <TankQueryProviderBase>
-    <App />
-  </TankQueryProviderBase>
+    <ChakraProvider toastOptions={{ defaultOptions: { position: 'top' } } }>
+      <TankQueryProviderBase>
+        <App/>
+      </TankQueryProviderBase>
+    </ChakraProvider>
 );

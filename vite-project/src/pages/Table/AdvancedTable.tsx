@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box,
     Input,
@@ -12,24 +12,20 @@ import {
     Flex,
     Spacer
 } from '@chakra-ui/react';
-import {
-  Alert,
-  AlertIcon,
-  Collapse,
-  AlertDescription,
-} from '@chakra-ui/react'
-import { AdvancedBaseTable } from "./components/AdvancedBaseTable";
-import type { AdvancedFinalResult, AdvancedResult,Photo } from "../../../public/type.d"
+
+import { useToast } from '@chakra-ui/react'
+import {AdvancedBaseTable} from "./components/AdvancedBaseTable";
+import type {AdvancedFinalResult, AdvancedResult, Photo} from "../../../public/type.d"
 import axios from 'axios';
-import { error } from 'console';
 
 const baseurl = "http://localhost:3001/api/photos/advanced";
 
 const AdvancedTable: React.FC = () => {
+    const toast = useToast();
     const [isLoading, setLoading] = useState<boolean>(true);
     const [data, setData] = useState<Photo[]>([]);
     const [search, setSearch] = useState('');
-    const [isSearch,setIsSearch] = useState<number>(0)
+    const [isSearch, setIsSearch] = useState<number>(0)
     const [category, setCategory] = useState('');
     const [sortBy, setSortBy] = useState('id');
     const [sortOrder, setSortOrder] = useState('asc');
@@ -38,13 +34,16 @@ const AdvancedTable: React.FC = () => {
     const [totalItems, setTotalItems] = useState<number>(0);
     const [availableCategories, setAvailableCategories] = useState<string[]>([]);
     const [url, setUrl] = useState<string>(`${baseurl}?page=1&limit=10`);
+    const [delinfo ,setdelinfo] = useState<any>();
+    const [modifyinfo ,setmodifynfo] = useState<any>();
+    const [editingId, setEditingId] = useState<number | null>(null);
+    const [editingTitle, setEditingTitle] = useState<string>('');
 
     // 动态状态
-    const [alertStatus, setAlertStatus] = useState<"success" | "error" | "warning" | "info">("success");
-    const [alertMessage, setAlertMessage] = useState("There was an error processing your request");
-    const [showAlter, setShowAlter] = useState(false);
+    // const [alertStatus, setAlertStatus] = useState<"success" | "error" | "warning" | "info">("success");
+    // const [alertMessage, setAlertMessage] = useState("");
 
-    const runQuery = ()=>{
+    const runQuery = () => {
         axios.get(url)
             .then(response => {
                 console.log(response.data);
@@ -67,6 +66,14 @@ const AdvancedTable: React.FC = () => {
         runQuery()
     }, [isSearch]);
 
+    useEffect(()=>{
+        ShowToast()
+    },[delinfo])
+
+    useEffect(()=>{
+        ShowToast()
+    },[modifyinfo])
+
     const buildUrl = (page: number, searchTerm: string, categoryFilter: string, sortField: string, sortDirection: string) => {
         const params = new URLSearchParams({
             page: page.toString(),
@@ -81,43 +88,120 @@ const AdvancedTable: React.FC = () => {
         return `${baseurl}?${params.toString()}`;
     };
 
+
+    const ShowToast = () => {
+        if (delinfo){
+            toast({
+                id: delinfo.id,
+                title: `delete id:${delinfo.id} success`,
+                status: delinfo.code == 0 ? "success" : "error",
+                duration: 2000,
+                isClosable: true,
+            });
+            setdelinfo(null)
+        }
+        if (modifyinfo){
+            toast({
+                id: modifyinfo.id,
+                title: `modify id:${modifyinfo.id} success`,
+                status: modifyinfo.code == 0 ? "success" : "error",
+                duration: 2000,
+                isClosable: true,
+            });
+            setmodifynfo(null)
+        }
+
+    }
+
     //删除
-    const handleDelete = (id:number)=>{
+    const handleDelete = (id: number) => {
         axios({
-            method: 'post',
-            url: `${url}`,
+            method: 'delete',
+            url: `${baseurl}`,
             data: {
                 id: id
-            }
+            },
+            headers: {
+                "Content-Type": "application/json",
+            },
         }).then(response => {
+            console.log(response.data);
+            const apiResponseData: AdvancedFinalResult = response.data;
+            console.log(apiResponseData)
+            setdelinfo(Object.assign(apiResponseData, {id: id}))
+
+            // 触发重新查询
+            setIsSearch((prev) => {
+                return prev + 1
+            })
+
+        })
+            .catch(error => {
+                console.error(error);
+                setdelinfo({code: -1, message: "error"})
+            });
+    }
+
+    const handleModify = (id: number, title: string) => {
+        // 如果当前行正在编辑，则保存修改
+        if (editingId === id) {
+            if (!editingTitle.trim()) {
+                toast({
+                    title: "标题不能为空",
+                    status: "error",
+                    duration: 2000,
+                    isClosable: true,
+                });
+                return;
+            }
+
+            axios({
+                method: 'put',
+                url: `${baseurl}`,
+                data: {
+                    id: id,
+                    title: editingTitle
+                },
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }).then(response => {
                 console.log(response.data);
                 const apiResponseData: AdvancedFinalResult = response.data;
                 console.log(apiResponseData)
-    
-                setAlertMessage(apiResponseData.message)
-                apiResponseData.code == 0 ? setAlertStatus('success') : setAlertStatus("error")
+                setmodifynfo(Object.assign(apiResponseData, {id: id}))
 
-                runQuery()
-                setIsSearch((prev)=>{
+                // 退出编辑状态
+                setEditingId(null);
+                setEditingTitle('');
+
+                // 触发重新查询
+                setIsSearch((prev) => {
                     return prev + 1
                 })
-                setAlertMessage('delete success')
-                setAlertStatus("success")
-                setShowAlter(true)
 
             })
-            .catch(error => {
-                console.error(error);
-                setAlertStatus("error")
-                setAlertMessage(error.message)
-            });
+                .catch(error => {
+                    console.error(error);
+                    setmodifynfo(Object.assign({code: -1, message: "error"},{id: id}))
+                });
+        } else {
+            // 进入编辑状态
+            setEditingId(id);
+            setEditingTitle(title);
+        }
+    }
+
+    const handleCancelEdit = () => {
+        setEditingId(null);
+        setEditingTitle('');
     }
 
     const handleSearch = () => {
         setLoading(true);
         setCurrentPage(1);
         setUrl(buildUrl(1, search, category, sortBy, sortOrder));
-        setIsSearch((prev)=>{
+        setIsSearch((prev) => {
             return prev + 1
         })
     };
@@ -126,7 +210,7 @@ const AdvancedTable: React.FC = () => {
         setCurrentPage(page);
         setLoading(true);
         setUrl(buildUrl(page, search, category, sortBy, sortOrder));
-        setIsSearch((prev)=>{
+        setIsSearch((prev) => {
             return prev + 1
         })
     };
@@ -137,7 +221,7 @@ const AdvancedTable: React.FC = () => {
         setLoading(true);
         setCurrentPage(1);
         setUrl(buildUrl(1, search, newCategory, sortBy, sortOrder));
-        setIsSearch((prev)=>{
+        setIsSearch((prev) => {
             return prev + 1
         })
     };
@@ -148,7 +232,7 @@ const AdvancedTable: React.FC = () => {
         setLoading(true);
         setCurrentPage(1);
         setUrl(buildUrl(1, search, category, newSortBy, sortOrder));
-        setIsSearch((prev)=>{
+        setIsSearch((prev) => {
             return prev + 1
         })
     };
@@ -159,7 +243,7 @@ const AdvancedTable: React.FC = () => {
         setLoading(true);
         setCurrentPage(1);
         setUrl(buildUrl(1, search, category, sortBy, newSortOrder));
-        setIsSearch((prev)=>{
+        setIsSearch((prev) => {
             return prev + 1
         })
     };
@@ -172,14 +256,14 @@ const AdvancedTable: React.FC = () => {
         setLoading(true);
         setCurrentPage(1);
         setUrl(buildUrl(1, '', '', 'id', 'asc'));
-        setIsSearch((prev)=>{
+        setIsSearch((prev) => {
             return prev + 1
         })
     };
 
     return (
         <VStack
-            divider={<StackDivider borderColor='gray.200' />}
+            divider={<StackDivider borderColor='gray.200'/>}
             spacing={4}
             align='stretch'
         >
@@ -250,7 +334,7 @@ const AdvancedTable: React.FC = () => {
                             </Select>
                         </Box>
 
-                        <Spacer />
+                        <Spacer/>
 
                         <Box>
                             <Badge colorScheme="blue" fontSize="sm">
@@ -260,13 +344,7 @@ const AdvancedTable: React.FC = () => {
                     </HStack>
                 </VStack>
             </Box>
-            
-            <Collapse in={showAlter} animateOpacity>
-                <Alert status={alertStatus} w="100%">
-                        <AlertIcon />
-                        {alertMessage}
-                    </Alert>
-            </Collapse>
+
             {/* 表格区域 */}
             <Box>
                 <AdvancedBaseTable
@@ -276,8 +354,13 @@ const AdvancedTable: React.FC = () => {
                     pageSize={pageSize}
                     isLoading={isLoading}
                     totalItems={totalItems}
+                    handleModify={handleModify}
                     handleDelete={handleDelete}
                     onPageChange={handlePageChange}
+                    editingId={editingId}
+                    editingTitle={editingTitle}
+                    setEditingTitle={setEditingTitle}
+                    handleCancelEdit={handleCancelEdit}
                 />
             </Box>
         </VStack>
