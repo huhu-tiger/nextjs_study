@@ -25,6 +25,7 @@ import TableDemo from './pages/Table'
 import StudyDemo from './pages/Study.tsx';
 import Miaobiao from './pages/Study/Miaobiao.tsx';
 import Jisuan from './pages/Study/Jisuan'
+import JisuanContext from './pages/Study/Jisuan_context.tsx'
 
 // transfer state
 import TransferState from './pages/TransferState';
@@ -37,7 +38,8 @@ import ZustandStore from './pages/TransferState/ZustandStore.tsx';
 // TankQuery
 import TankQuery from "./pages/TankQuery";
 import TankQueryBase from "./pages/TankQuery/TankQueryBase";
-import TankQueryProviderBase from "./components/ProviderClient";
+import TankQueryProviderBase from "./components/ProviderClient";   // 全局provider
+import TankQueryAdvancedTable from './pages/TankQuery/AdvancedTable.tsx'
 
 
 function App(): JSX.Element {
@@ -72,6 +74,7 @@ function App(): JSX.Element {
             <Route path="study" element={<StudyDemo />} />
             <Route path="study/miaobiao" element={<Miaobiao />} />
             <Route path="study/jisuan" element={<Jisuan />} />
+            <Route path="study/jisuan_context" element={<JisuanContext />} />
 
             <Route path="transferstate" element={<TransferState />} />
             <Route path="transferstate/contextuse" element={<ContextUse />} />
@@ -81,6 +84,7 @@ function App(): JSX.Element {
             <Route path="transferstate/zustandStore" element={<ZustandStore />} />
             <Route path="tankquery" element={<TankQuery />} />
             <Route path="tankquery/tankquerybase" element={<TankQueryBase />} />
+            <Route path="tankquery/tankqueryadvancedtable" element={<TankQueryAdvancedTable/>}/>
 
           </Route>
         </Routes>

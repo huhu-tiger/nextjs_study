@@ -15,7 +15,7 @@ import {
     VStack,
 } from '@chakra-ui/react'
 import React from "react";
-import type { IProps} from "../typeDefine/Idata";
+import type { IProps, Album} from "../typeDefine/Idata";
 
 
 export const BaseTable: React.FC<IProps> = (props) => {

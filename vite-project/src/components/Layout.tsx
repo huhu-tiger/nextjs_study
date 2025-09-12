@@ -72,7 +72,8 @@ const Layout: React.FC = () => {
       label: '学习',
       children: [
         { path: '/study/miaobiao', label: '秒表' },
-        { path: '/study/jisuan', label: '计算' },
+        { path: '/study/jisuan', label: '计算memo' },
+        { path: '/study/jisuan_context', label: '计算Context' },        
       ]
     },  
     {
@@ -91,7 +92,7 @@ const Layout: React.FC = () => {
       label: 'tankquery',
       children: [
         { path: '/tankquery/tankquerybase', label: 'tankquery基础' },
-
+        { path: '/tankquery/tankqueryadvancedtable', label: 'tankquery表格' },
       ]
     },
   ];
@@ -140,7 +141,8 @@ const Layout: React.FC = () => {
     if (path === '/') {
       return location.pathname === '/';
     }
-    return location.pathname.startsWith(path);
+    // 精确匹配路径，避免子路径误匹配
+    return location.pathname === path;
   };
 
   const generateBreadcrumbs = () => {

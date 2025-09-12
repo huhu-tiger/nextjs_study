@@ -16,16 +16,29 @@ import {
 } from '@chakra-ui/react'
 import { Stack, Button } from '@chakra-ui/react'
 import React from "react";
-import type { IProps } from "../typeDefine/Idata";
+import type { IProps } from "../type";
 import type { Photo } from '../../../../public/type.d';
 
 
 export const AdvancedBaseTable: React.FC<IProps> = (props) => {
-    const { data, page, pageSize, totalItems, isLoading, onPageChange, handleDelete, handleModify, editingId, editingTitle, setEditingTitle, handleCancelEdit } = props;
+    const { 
+        data = { data: [], pagination: { totalItems: 0, totalPages: 1, currentPage: 1, itemsPerPage: 10, hasNextPage: false, hasPrevPage: false, startIndex: 1, endIndex: 0 }, filters: { search: '', category: '', sortBy: 'id', sortOrder: 'asc' }, metadata: { availableCategories: [], totalPhotos: 0, filteredCount: 0 } }, 
+        page = 1, 
+        pageSize = 10, 
+        isLoading = false, 
+        onPageChange, 
+        handleDelete, 
+        handleModify, 
+        editingId = null, 
+        editingTitle = '', 
+        setEditingTitle, 
+        handleCancelEdit 
+    } = props;
     console.log(isLoading)
     console.log(data)
+    const totalItems = data?.pagination.totalItems || 0;
     // 计算总页数
-    const totalPages = Math.ceil(totalItems / pageSize);
+    const totalPages = Math.ceil(totalItems / pageSize) || 1;
 
     // 生成页码数组
     const getPageNumbers = () => {
@@ -70,7 +83,7 @@ export const AdvancedBaseTable: React.FC<IProps> = (props) => {
                         </Tr>
                     </Thead>
                     <Tbody>
-                        {data.map((item: Photo) => (
+                        {data?.data.map((item: Photo) => (
                             <Tr key={item.id}>
                                 <Td>{item.id}</Td>
                                 <Td maxW="200px">
@@ -82,7 +95,7 @@ export const AdvancedBaseTable: React.FC<IProps> = (props) => {
                                             placeholder="请输入标题"
                                             onKeyPress={(e) => {
                                                 if (e.key === 'Enter') {
-                                                    handleModify(item.id, editingTitle);
+                                                    handleModify(Object.assign(item,{title:editingTitle}));
                                                 }
                                                 if (e.key === 'Escape') {
                                                     handleCancelEdit();
@@ -119,7 +132,7 @@ export const AdvancedBaseTable: React.FC<IProps> = (props) => {
                                         <Button 
                                             colorScheme={editingId === item.id ? 'green' : 'teal'} 
                                             size='sm' 
-                                            onClick={()=>{handleModify(item.id, item.title)}}
+                                            onClick={()=>{handleModify(item)}}
                                         >
                                             {editingId === item.id ? '保存' : '修改'}
                                         </Button>

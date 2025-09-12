@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Input,
@@ -12,68 +12,75 @@ import {
     Flex,
     Spacer
 } from '@chakra-ui/react';
-
+import {
+    useQuery,
+    useMutation,
+    useQueryClient,
+} from '@tanstack/react-query'
 import { useToast } from '@chakra-ui/react'
-import {AdvancedBaseTable} from "./components/AdvancedBaseTable";
-import type {AdvancedFinalResult, AdvancedResult, Photo} from "../../../public/type.d"
+import { AdvancedBaseTable } from "./components/AdvancedBaseTable";
+import type { AdvancedFinalResult, AdvancedResult, Photo } from "../../../public/type.d"
 import axios from 'axios';
 import {PhotoAdvancedUrl} from '../../config/api';
-
+import { CustomStore } from './store/CustomStore';
 const baseurl = PhotoAdvancedUrl
 
-const AdvancedTable: React.FC = () => {
+
+const TankQueryAdvancedTable: React.FC = () => {
     const toast = useToast();
-    const [isLoading, setLoading] = useState<boolean>(true);
-    const [data, setData] = useState<Photo[]>([]);
+    const queryClient = useQueryClient();
+    // const [isLoading, setLoading] = useState<boolean>(true);
+    // const [data, setData] = useState<Photo[]>([]);
     const [search, setSearch] = useState('');
-    const [isSearch, setIsSearch] = useState<number>(0)
+    // const [isSearch, setIsSearch] = useState<number>(0) // 不再需要，使用 queryClient.invalidateQueries
     const [category, setCategory] = useState('');
-    const [sortBy, setSortBy] = useState('id');
-    const [sortOrder, setSortOrder] = useState('asc');
+    // const [sortBy, setSortBy] = useState('id');
+    const {sortBy, setSortBy, sortOrder, setSortOrder} = CustomStore()
+    // const [sortOrder, setSortOrder] = useState('asc');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize] = useState<number>(10);
-    const [totalItems, setTotalItems] = useState<number>(0);
+    // const [totalItems, setTotalItems] = useState<number>(0);
     const [availableCategories, setAvailableCategories] = useState<string[]>([]);
     const [url, setUrl] = useState<string>(`${baseurl}?page=1&limit=10`);
-    const [delinfo ,setdelinfo] = useState<any>();
-    const [modifyinfo ,setmodifynfo] = useState<any>();
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editingTitle, setEditingTitle] = useState<string>('');
 
+
+    const { isLoading = false, isError = false, data = null, error = null, isFetching = false } = useQuery({
+        // keepPreviousData: true,
+        // refetchOnWindowFocus: false,
+        retry: false,
+        cacheTime: 10,  //毫秒，缓存时间
+        networkMode: 'always',
+        queryKey: ['repoData', url], // 全局唯一KEY，一样的key在不同组件中同时缓存。  数组内变量 改变时自动触发
+        queryFn: async () => {
+            try {
+                const response = await axios.get(url);
+                const apiResponseData: AdvancedFinalResult = response.data;
+
+                if (apiResponseData.code === 0 && apiResponseData.data) {
+                    const apiResponse: AdvancedResult = apiResponseData.data;
+                    console.log(apiResponse)
+                    // setTotalItems(apiResponse.pagination.totalItems);
+                    setAvailableCategories(apiResponse.metadata.availableCategories);
+                    return apiResponse;
+                } else {
+                    // setTotalItems(0);
+                    setAvailableCategories([]);
+                    throw new Error(apiResponseData.message || 'API returned error');
+                }
+            } catch (error) {
+                console.error(error);
+                // setTotalItems(0);
+                setAvailableCategories([]);
+                throw error;
+            }
+        }
+    })
     // 动态状态
     // const [alertStatus, setAlertStatus] = useState<"success" | "error" | "warning" | "info">("success");
     // const [alertMessage, setAlertMessage] = useState("");
 
-    const runQuery = () => {
-        axios.get(url)
-            .then(response => {
-                console.log(response.data);
-                const apiResponseData: AdvancedFinalResult = response.data;
-                console.log(apiResponseData)
-                const apiResponse = apiResponseData.data as AdvancedResult
-                setData(apiResponse.data);
-                setTotalItems(apiResponse.pagination.totalItems);
-                setAvailableCategories(apiResponse.metadata.availableCategories);
-                setLoading(false);
-            })
-            .catch(error => {
-                console.error(error);
-                setData([]);
-                setTotalItems(0);
-                setLoading(false);
-            });
-    }
-    useEffect(() => {
-        runQuery()
-    }, [isSearch]);
-
-    useEffect(()=>{
-        ShowToast()
-    },[delinfo])
-
-    useEffect(()=>{
-        ShowToast()
-    },[modifyinfo])
 
     const buildUrl = (page: number, searchTerm: string, categoryFilter: string, sortField: string, sortDirection: string) => {
         const params = new URLSearchParams({
@@ -90,62 +97,76 @@ const AdvancedTable: React.FC = () => {
     };
 
 
-    const ShowToast = () => {
-        if (delinfo){
-            toast({
-                id: delinfo.id,
-                title: `delete id:${delinfo.id} success`,
-                status: delinfo.code == 0 ? "success" : "error",
-                duration: 2000,
-                isClosable: true,
-            });
-            setdelinfo(null)
-        }
-        if (modifyinfo){
-            toast({
-                id: modifyinfo.id,
-                title: `modify id:${modifyinfo.id} success`,
-                status: modifyinfo.code == 0 ? "success" : "error",
-                duration: 2000,
-                isClosable: true,
-            });
-            setmodifynfo(null)
-        }
-
+    const ShowToast = (id: any, title: string, status: "success"|"error") => {
+        toast({
+            id: id,
+            title: title,
+            status: status,
+            duration: 2000,
+            isClosable: true,
+        });
     }
-
-    //删除
-    const handleDelete = (id: number) => {
-        axios({
-            method: 'delete',
-            url: `${baseurl}`,
-            data: {
-                id: id
-            },
-            headers: {
-                "Content-Type": "application/json",
-            },
-        }).then(response => {
-            console.log(response.data);
-            const apiResponseData: AdvancedFinalResult = response.data;
-            console.log(apiResponseData)
-            setdelinfo(Object.assign(apiResponseData, {id: id}))
-
-            // 触发重新查询
-            setIsSearch((prev) => {
-                return prev + 1
-            })
-
-        })
-            .catch(error => {
-                console.error(error);
-                setdelinfo({code: -1, message: "error"})
+    // Mutations
+    const handleDelete = useMutation({
+        mutationKey: ["delete"],
+        mutationFn: async (id: number) => {
+            const response = await axios({
+                method: 'delete',
+                url: `${baseurl}`,
+                data: {
+                    id: id
+                },
+                headers: {
+                    "Content-Type": "application/json",
+                },
             });
-    }
+            return response.data;
+        },
+        onSuccess: (data: any, variables: number) => {
+ 
+            ShowToast(variables, `delete id: ${variables} success`, data.code == 0 ? "success" : "error")
 
-    const handleModify = (id: number, title: string) => {
+            // 自动触发重新查询 - 方法1：使缓存失效
+            queryClient.invalidateQueries({ queryKey: ['repoData'] })
+        },
+        onError: (error: any, variables: number) => {
+            ShowToast(variables, `delete id: ${variables} err`, "error")
+        }
+    })
+
+    const handleModifyRequest = useMutation({
+        mutationKey: ["modify"],
+        mutationFn: async (variables: { id: number, title: string } = { id: 0, title: '' }) => {
+            console.log(variables)
+            const response = await axios({
+                method: 'put',
+                url: `${baseurl}`,
+                data: { id: variables.id, title: variables.title },
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            return response.data
+        },
+        onSuccess: (data: any, variables: { id: number, title: string }) => {
+            // setmodifynfo(Object.assign({ code: 0, message: "success" }, { id: variables.id, title: variables.title }))
+            console.log(data)
+            ShowToast(variables, `modify id: ${variables.id} success`, data.code == 0 ? "success" : "error")
+            // 退出编辑状态
+            setEditingId(null);
+            setEditingTitle('');
+            // 自动触发重新查询 - 方法1：使缓存失效
+            queryClient.invalidateQueries({ queryKey: ['repoData'] })
+        },
+        onError: (error: any, variables: { id: number, title: string }) => {
+            // setmodifynfo(Object.assign({ code: -1, message: "error" }, { id: variables.id, title: variables.title }))
+            ShowToast(variables, `modify id: ${variables.id} err`, "error")
+        }
+    })
+
+    const handleModify = (item: Photo) => {
         // 如果当前行正在编辑，则保存修改
-        if (editingId === id) {
+        if (editingId === item.id) {
             if (!editingTitle.trim()) {
                 toast({
                     title: "标题不能为空",
@@ -155,43 +176,15 @@ const AdvancedTable: React.FC = () => {
                 });
                 return;
             }
-
-            axios({
-                method: 'put',
-                url: `${baseurl}`,
-                data: {
-                    id: id,
-                    title: editingTitle
-                },
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }).then(response => {
-                console.log(response.data);
-                const apiResponseData: AdvancedFinalResult = response.data;
-                console.log(apiResponseData)
-                setmodifynfo(Object.assign(apiResponseData, {id: id}))
-
-                // 退出编辑状态
-                setEditingId(null);
-                setEditingTitle('');
-
-                // 触发重新查询
-                setIsSearch((prev) => {
-                    return prev + 1
-                })
-
-            })
-                .catch(error => {
-                    console.error(error);
-                    setmodifynfo(Object.assign({code: -1, message: "error"},{id: id}))
-                });
+            console.log(item, editingTitle)
+            handleModifyRequest.mutate({ id: item.id, title: editingTitle })
         } else {
             // 进入编辑状态
-            setEditingId(id);
-            setEditingTitle(title);
+            setEditingId(item.id);
+            setEditingTitle(item.title);
         }
     }
+
 
     const handleCancelEdit = () => {
         setEditingId(null);
@@ -199,54 +192,41 @@ const AdvancedTable: React.FC = () => {
     }
 
     const handleSearch = () => {
-        setLoading(true);
         setCurrentPage(1);
         setUrl(buildUrl(1, search, category, sortBy, sortOrder));
-        setIsSearch((prev) => {
-            return prev + 1
-        })
+        queryClient.invalidateQueries({ queryKey: ['repoData'] })
     };
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
-        setLoading(true);
+
         setUrl(buildUrl(page, search, category, sortBy, sortOrder));
-        setIsSearch((prev) => {
-            return prev + 1
-        })
+        queryClient.invalidateQueries({ queryKey: ['repoData'] })
     };
 
     const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const newCategory = event.target.value;
         setCategory(newCategory);
-        setLoading(true);
+
         setCurrentPage(1);
         setUrl(buildUrl(1, search, newCategory, sortBy, sortOrder));
-        setIsSearch((prev) => {
-            return prev + 1
-        })
+        queryClient.invalidateQueries({ queryKey: ['repoData'] })
     };
 
     const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const newSortBy = event.target.value;
         setSortBy(newSortBy);
-        setLoading(true);
         setCurrentPage(1);
         setUrl(buildUrl(1, search, category, newSortBy, sortOrder));
-        setIsSearch((prev) => {
-            return prev + 1
-        })
+        queryClient.invalidateQueries({ queryKey: ['repoData'] })
     };
 
     const handleSortOrderChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const newSortOrder = event.target.value;
         setSortOrder(newSortOrder);
-        setLoading(true);
         setCurrentPage(1);
         setUrl(buildUrl(1, search, category, sortBy, newSortOrder));
-        setIsSearch((prev) => {
-            return prev + 1
-        })
+        queryClient.invalidateQueries({ queryKey: ['repoData'] })
     };
 
     const clearFilters = () => {
@@ -254,17 +234,14 @@ const AdvancedTable: React.FC = () => {
         setCategory('');
         setSortBy('id');
         setSortOrder('asc');
-        setLoading(true);
         setCurrentPage(1);
         setUrl(buildUrl(1, '', '', 'id', 'asc'));
-        setIsSearch((prev) => {
-            return prev + 1
-        })
+        queryClient.invalidateQueries({ queryKey: ['repoData'] })
     };
 
     return (
         <VStack
-            divider={<StackDivider borderColor='gray.200'/>}
+            divider={<StackDivider borderColor='gray.200' />}
             spacing={4}
             align='stretch'
         >
@@ -335,11 +312,11 @@ const AdvancedTable: React.FC = () => {
                             </Select>
                         </Box>
 
-                        <Spacer/>
+                        <Spacer />
 
                         <Box>
                             <Badge colorScheme="blue" fontSize="sm">
-                                共 {totalItems} 条记录
+                                共 {data?.pagination.totalItems} 条记录
                             </Badge>
                         </Box>
                     </HStack>
@@ -350,13 +327,12 @@ const AdvancedTable: React.FC = () => {
             <Box>
                 <AdvancedBaseTable
                     url={url}
-                    data={data}
+                    data={data || { data: [], pagination: { totalItems: 0, totalPages: 1, currentPage: 1, itemsPerPage: 10, hasNextPage: false, hasPrevPage: false, startIndex: 1, endIndex: 0 }, filters: { search: '', category: '', sortBy: 'id', sortOrder: 'asc' }, metadata: { availableCategories: [], totalPhotos: 0, filteredCount: 0 } }}
                     page={currentPage}
                     pageSize={pageSize}
                     isLoading={isLoading}
-                    totalItems={totalItems}
                     handleModify={handleModify}
-                    handleDelete={handleDelete}
+                    handleDelete={handleDelete.mutate}
                     onPageChange={handlePageChange}
                     editingId={editingId}
                     editingTitle={editingTitle}
@@ -368,4 +344,4 @@ const AdvancedTable: React.FC = () => {
     );
 };
 
-export default AdvancedTable;
+export default TankQueryAdvancedTable;

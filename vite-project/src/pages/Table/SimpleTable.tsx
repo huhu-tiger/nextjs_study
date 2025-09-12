@@ -4,9 +4,10 @@ import {BaseTable} from "./components/BaseTable.tsx";
 import type {Album} from "./typeDefine/Idata";
 import axios from 'axios';
 // 在浏览器或支持ES6模块的环境中
+import {PhotoUrl} from '../../config/api';
 
+const baseurl = PhotoUrl
 
-const baseurl = "http://localhost:3001/api/photos"
 
 const SimpleTable: React.FC = () => {
     const [isLoading, setLoading] = useState<boolean>(true)

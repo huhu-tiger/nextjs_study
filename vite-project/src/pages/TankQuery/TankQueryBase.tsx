@@ -9,6 +9,9 @@ import axios from 'axios'
 
 function TankQueryBaseChild() {
     const { isLoading, isError, data, error,isFetching } = useQuery({
+        retry: false,
+        cacheTime: 10,  //毫秒
+        networkMode: 'always',
         queryKey: ['repoData'],
         queryFn: () =>
             axios

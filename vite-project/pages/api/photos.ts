@@ -5,11 +5,9 @@ const mockPhotos = Array.from({ length: 100 }, (_, index) => ({
   albumId: Math.floor(index / 10) + 1,
   id: index + 1,
   title: `Photo ${index + 1} - Lorem ipsum dolor sit amet`,
-  url: `http://localhost:3001/api/image/generate/${index + 1}?size=large`,
-  thumbnailUrl: `http://localhost:3001/api/image/generate/${index + 1}?size=thumbnail`,
+  url: `/api/image/generate/${index + 1}?size=large`,
+  thumbnailUrl: `/api/image/generate/${index + 1}?size=thumbnail`,
 }));
-
-
 
 
 function handler(req: NextApiRequest, res: NextApiResponse) {
