@@ -25,8 +25,9 @@ import TableDemo from './pages/Table'
 import StudyDemo from './pages/Study.tsx';
 import Miaobiao from './pages/Study/Miaobiao.tsx';
 import Jisuan from './pages/Study/Jisuan'
-import JisuanContext from './pages/Study/Jisuan_context.tsx'
-
+import TodoContextComponent from './pages/Study/Todo_context.tsx'
+import TodoReducer from './pages/Study/Todo_reducer.tsx'
+import Todo from './pages/Study/Todo.tsx'
 // transfer state
 import TransferState from './pages/TransferState';
 import ContextUse from './pages/TransferState/ContextUse';
@@ -74,7 +75,10 @@ function App(): JSX.Element {
             <Route path="study" element={<StudyDemo />} />
             <Route path="study/miaobiao" element={<Miaobiao />} />
             <Route path="study/jisuan" element={<Jisuan />} />
-            <Route path="study/jisuan_context" element={<JisuanContext />} />
+            <Route path="study/todo_reducer" element={<TodoReducer />} />
+            <Route path="study/todo" element={<Todo />} />
+            <Route path="study/todo_context" element={<TodoContextComponent />} />
+
 
             <Route path="transferstate" element={<TransferState />} />
             <Route path="transferstate/contextuse" element={<ContextUse />} />

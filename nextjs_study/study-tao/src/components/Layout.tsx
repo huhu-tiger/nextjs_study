@@ -14,7 +14,7 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
 } from '@chakra-ui/react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { ChevronDownIcon, ChevronRightIcon } from '@chakra-ui/icons';
 
 interface MenuItem {
@@ -23,9 +23,8 @@ interface MenuItem {
   children?: MenuItem[];
 }
 
-const Layout: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const router = useRouter();
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
   
   const bgColor = useColorModeValue('gray.50', 'gray.900');
@@ -67,7 +66,7 @@ const Layout: React.FC = () => {
         { path: '/table/advancedtable', label: '高级表格' },
       ]
     },
-        {
+    {
       path: '/study',
       label: '学习',
       children: [
@@ -100,7 +99,7 @@ const Layout: React.FC = () => {
   ];
 
   const handleNavigation = (path: string) => {
-    navigate(path);
+    router.push(path);
   };
 
   const toggleMenu = (path: string) => {
@@ -113,7 +112,7 @@ const Layout: React.FC = () => {
 
   // 根据当前路径自动展开对应的一级菜单
   useEffect(() => {
-    const currentPath = location.pathname;
+    const currentPath = router.pathname;
     
     // 找到当前路径对应的一级菜单
     const parentMenu = menuItems.find(item => 
@@ -135,20 +134,20 @@ const Layout: React.FC = () => {
         setExpandedMenus([]);
       }
     }
-  }, [location.pathname]);
+  }, [router.pathname]);
 
   const isMenuExpanded = (path: string) => expandedMenus.includes(path);
 
   const isActiveRoute = (path: string) => {
     if (path === '/') {
-      return location.pathname === '/';
+      return router.pathname === '/';
     }
     // 精确匹配路径，避免子路径误匹配
-    return location.pathname === path;
+    return router.pathname === path;
   };
 
   const generateBreadcrumbs = () => {
-    const pathSegments = location.pathname.split('/').filter(Boolean);
+    const pathSegments = router.pathname.split('/').filter(Boolean);
     const breadcrumbs = [{ label: '首页', path: '/' }];
     
     let currentPath = '';
@@ -267,7 +266,7 @@ const Layout: React.FC = () => {
             </Breadcrumb>
             
             {/* Page Content */}
-            <Outlet />
+            {children}
           </VStack>
         </GridItem>
 

@@ -1,5 +1,5 @@
-import React, { useState,useEffect, useRef, useMemo } from "react";
-import { Stack, HStack, VStack } from '@chakra-ui/react'
+import React, { useState, useMemo } from "react";
+import { VStack } from '@chakra-ui/react'
 import {
   Stat,
   StatLabel,
@@ -8,7 +8,6 @@ import {
   StatArrow,
   StatGroup,
 } from '@chakra-ui/react'
-import { Button, ButtonGroup } from '@chakra-ui/react'
 import {
   NumberInput,
   NumberInputField,

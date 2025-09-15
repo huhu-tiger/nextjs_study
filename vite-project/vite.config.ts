@@ -10,7 +10,7 @@ export default defineConfig({
     proxy: {
       // 代理所有 /api 请求到后端服务器
       '/api': {
-        target: 'http://172.22.220.21:3001', // 统一的后端API地址
+        target: 'http://localhost:3001', // 统一的后端API地址
         changeOrigin: true,
         secure: false,
         // 可选：重写路径
