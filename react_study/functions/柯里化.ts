@@ -33,4 +33,8 @@ console.log(`add2 : ${add2(2)(3)}`)
 
 // 返回对象
 const add3 = (a:number) => ((b:number)=>({"aa":a,"bb":b}))
-console.log(add3(2)(3)) 
+console.log(add3(2)(3))
+
+// function
+
+

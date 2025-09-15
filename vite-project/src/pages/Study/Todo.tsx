@@ -1,52 +1,22 @@
-import React, { useState, useEffect, useReducer, useMemo } from "react";
-import { Stack, HStack, VStack, list } from '@chakra-ui/react'
-import {
-    Stat,
-    StatLabel,
-    StatNumber,
-    StatHelpText,
-    StatArrow,
-    StatGroup,
-} from '@chakra-ui/react'
-import { Button, ButtonGroup } from '@chakra-ui/react'
+import React, {useState} from "react";
+import {HStack, VStack} from '@chakra-ui/react'
+
+import {Button,} from '@chakra-ui/react'
 import {
     Box,
-    List,
     ListItem,
-    ListIcon,
-    OrderedList,
     UnorderedList,
 } from '@chakra-ui/react'
-import { Input } from '@chakra-ui/react'
+import {Input} from '@chakra-ui/react'
 
 
 let initialState = [
-    { id: 1, context: "你好" },
-    { id: 2, context: "你好呀" }
+    {id: 1, context: "你好"},
+    {id: 2, context: "你好呀"}
 ]
 
 type Itodo = typeof initialState[0]
 
-
-type global = {
-    editid
-}
-
-
-const tasksReducer = (state: { List: Itodo[] }, action: { type: "add" | "edit"|"del" }) => {
-    switch (action.type) {
-        case "add":
-            const nextid=state.List[state.List.length -1].id+1
-            return [...state.List, { id: nextid, context: addContext }]
-        case "edit":
-            return { count: state.count - 1 }
-        case "del":
-
-        default:
-            return state
-    }
-
-}
 
 interface Iprops {
     setList: any
@@ -54,7 +24,7 @@ interface Iprops {
 }
 
 const Task: React.FC<Iprops> = (props: Iprops) => {
-    const { List, setList } = props
+    const {List, setList} = props
     const [editid, seteditid] = useState<number>(-1)
     const [editContext, seteditContext] = useState<string>()
 
@@ -80,7 +50,7 @@ const Task: React.FC<Iprops> = (props: Iprops) => {
             console.log(editid)
             console.log(List)
             setList(List.map((item: Itodo) => {
-                return (item.id === editid ? {id:item.id,context:editContext} : item)
+                return (item.id === editid ? {id: item.id, context: editContext} : item)
 
             }))
 
@@ -94,19 +64,19 @@ const Task: React.FC<Iprops> = (props: Iprops) => {
 
                 (editid !== item.id) ? (
 
-                    <ListItem key={item.id}>
-                        <HStack spacing={4} align="stretch">
-                            <Input
+                        <ListItem key={item.id}>
+                            <HStack spacing={4} align="stretch">
+                                <Input
                                     defaultValue={item.context}
                                     disabled
                                     size="sm"
                                     autoFocus
                                 />
-                            <Button onClick={() => delclick(item.id)}> 删除 </Button>
-                            <Button onClick={() => modifyclick(item.id)}> 修改 </Button>
-                        </HStack>
-                    </ListItem>
-                ) :
+                                <Button onClick={() => delclick(item.id)}> 删除 </Button>
+                                <Button onClick={() => modifyclick(item.id)}> 修改 </Button>
+                            </HStack>
+                        </ListItem>
+                    ) :
                     (
                         <ListItem key={item.id}>
                             <HStack spacing={4} align="stretch">
@@ -130,17 +100,17 @@ const Task: React.FC<Iprops> = (props: Iprops) => {
     )
 }
 
-const JisuanContext: React.FC = () => {
+const Todo: React.FC = () => {
 
     const [addContext, setaddContext] = useState<string>('')
     const [List, setList] = useState<Itodo[]>(initialState)
     // let nextid = 3
-    let nextid:number=0
+    let nextid: number = 0
     const addClick = () => {
         if (addContext) {
-            nextid=List[List.length -1].id+1
-            setList([...List, { id: nextid, context: addContext }])
-            nextid=nextid+1
+            nextid = List[List.length - 1].id + 1
+            setList([...List, {id: nextid, context: addContext}])
+            nextid = nextid + 1
             setaddContext('')
         }
 
@@ -156,7 +126,9 @@ const JisuanContext: React.FC = () => {
                     placeholder="请输入标题"
                     autoFocus
                 />
-                <Button onClick={() => { addClick() }}>add</Button>
+                <Button onClick={() => {
+                    addClick()
+                }}>add</Button>
 
             </HStack>
             <Box>
@@ -168,4 +140,4 @@ const JisuanContext: React.FC = () => {
 }
 
 
-export default JisuanContext
+export default Todo
