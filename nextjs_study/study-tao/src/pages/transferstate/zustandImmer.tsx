@@ -59,7 +59,7 @@ const useTodoStore = create<TodoStore>()(
   }))
 );
 
-const TodoItem: React.FC<{ todo: Todo }> = ({ todo }) => {
+const TodoItem: React.FC<{ todo: Todo }> = React.memo(({ todo }) => {
   const { toggleTodo, deleteTodo } = useTodoStore();
   const [isEditing, setIsEditing] = React.useState(false);
   const [editText, setEditText] = React.useState(todo.text);
@@ -153,7 +153,7 @@ const TodoItem: React.FC<{ todo: Todo }> = ({ todo }) => {
       </HStack>
     </Box>
   );
-};
+});
 
 const ZustandImmer: React.FC = () => {
   const { todos, addTodo, clearCompleted } = useTodoStore();

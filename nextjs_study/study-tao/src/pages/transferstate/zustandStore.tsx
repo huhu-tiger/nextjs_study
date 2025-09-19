@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Heading, Text, VStack, Button, HStack, Input, FormControl, FormLabel, Switch, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper } from '@chakra-ui/react';
 import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
+import { devtools, persist,createJSONStorage  } from 'zustand/middleware';
 
 interface AppSettings {
   theme: 'light' | 'dark';
@@ -49,6 +49,54 @@ const defaultSettings: AppSettings = {
   fontSize: 14,
 };
 
+
+// 自定义存储
+const createCustomStorage = () => {
+  const sessionKeys = ['todo', 'settings']; // 自定义要保存的key
+
+  return {
+      getItem: (name: string) => {
+          const sessionData = JSON.parse(sessionStorage.getItem(name) || '{}');
+          const localData = JSON.parse(localStorage.getItem(name) || '{}');
+          return JSON.stringify({ ...localData, ...sessionData });
+      },
+      setItem: (name: string, value: string) => {
+          const data = JSON.parse(value);
+          console.log(data)
+          // 分离 session 和 local 数据
+          const sessionData = Object.fromEntries(
+              Object.entries(data.state).filter(([key]) => sessionKeys.includes(key))
+          );
+          const localData = Object.fromEntries(
+              Object.entries(data.state).filter(([key]) => sessionKeys.includes(key))
+          );
+          /*
+            Object.entries(data.state)
+            假设 data.state = { name: "张三", age: 25, source: "web", chatId: "123" }
+            返回: [["name", "张三"], ["age", 25], ["source", "web"], ["chatId", "123"]]
+          
+            .filter(([key]) => sessionKeys.includes(key))
+            filter() 方法过滤数组
+            ([key]) 是数组解构语法
+            等价于 (item) => item[0]，但更简洁
+          */
+
+
+          // 分别存储
+          if (Object.keys(sessionData).length > 0) {
+              sessionStorage.setItem(name, JSON.stringify({ state: sessionData, version: 0 }));
+          }
+          if (Object.keys(localData).length > 0) {
+              localStorage.setItem(name, JSON.stringify({ state: localData, version: 0 }));
+          }
+      },
+      removeItem: (name: string) => {
+          sessionStorage.removeItem(name);
+          localStorage.removeItem(name);
+      }
+  };
+};
+
 const useAppStore = create<AppStore>()(
   devtools(
     persist(
@@ -80,18 +128,21 @@ const useAppStore = create<AppStore>()(
         })),
         clearTodos: () => set({ todos: [] }),
       }),
-      {
-        name: 'app-store',
-        partialize: (state) => ({
-          settings: state.settings,
-          count: state.count,
-          todos: state.todos,
-        }),
+      { // 自定义持久化存储
+        name: "custom-storage",
+        // storage: createJSONStorage(()=>localStorage)
+        storage: createJSONStorage(createCustomStorage)
       }
+      // {
+      //   name: 'app-store',
+      //   partialize: (state) => ({  // 持久化到LocalStorage
+      //     settings: state.settings,
+      //     count: state.count,
+      //     todos: state.todos,
+      //   }),
+      // }
     ),
-    {
-      name: 'app-store',
-    }
+
   )
 );
 

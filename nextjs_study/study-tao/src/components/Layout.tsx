@@ -96,6 +96,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         { path: '/tankquery/tankqueryadvancedtable', label: 'tankquery表格' },
       ]
     },
+    {
+      path: '/mongodb',
+      label: 'mongodb',
+      children: [
+        { path: '/mongodb/photos', label: 'mongodb照片' },
+      ]
+    }
   ];
 
   const handleNavigation = (path: string) => {

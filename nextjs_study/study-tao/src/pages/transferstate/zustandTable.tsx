@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Heading, Text, VStack, Button, HStack, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Badge } from '@chakra-ui/react';
 import { create } from 'zustand';
-
+import { devtools, persist  } from 'zustand/middleware';
 interface User {
   id: number;
   name: string;
@@ -16,7 +16,9 @@ interface UserStore {
   updateUser: (id: number, user: Partial<User>) => void;
 }
 
-const useUserStore = create<UserStore>((set) => ({
+const useUserStore = create<UserStore>()(
+  devtools(
+  (set) => ({
   users: [
     { id: 1, name: '张三', email: 'zhangsan@example.com', role: '管理员' },
     { id: 2, name: '李四', email: 'lisi@example.com', role: '用户' },
@@ -33,7 +35,7 @@ const useUserStore = create<UserStore>((set) => ({
       user.id === id ? { ...user, ...updatedUser } : user
     )
   })),
-}));
+})));
 
 const UserTable: React.FC = () => {
   const { users, deleteUser } = useUserStore();

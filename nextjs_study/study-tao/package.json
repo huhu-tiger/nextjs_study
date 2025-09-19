@@ -6,7 +6,11 @@
     "dev": "next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "init-data": "ts-node scripts/init-data.ts",
+    "test-api-quick": "ts-node scripts/quick-test-api.ts",
+    "test-photos-ui": "ts-node scripts/test-photos-ui.ts",
+    "test-photo-table": "ts-node scripts/test-photo-table.ts"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
@@ -23,6 +27,9 @@
     "react-dom": "^18.3.1",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.8.2",
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "mongoose": "^8.10.1",
+    "react-markdown": "^9.0.1",
     "zustand": "^4.3.5",
     "ahooks": "^3.7.11",
     "use-context-selector": "^1.4.4",

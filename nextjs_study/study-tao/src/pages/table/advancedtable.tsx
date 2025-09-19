@@ -1,267 +1,371 @@
-import React, { useEffect, useState } from 'react';
-import { 
-  Box, 
-  Button, 
-  HStack, 
-  Input, 
-  InputGroup, 
-  InputLeftAddon, 
-  StackDivider, 
-  VStack, 
-  Table, 
-  Thead, 
-  Tbody, 
-  Tr, 
-  Th, 
-  Td, 
-  TableContainer, 
-  Spinner, 
-  Text,
-  Select,
-  Badge,
-  Tooltip,
-  IconButton
+import React, {useCallback, useEffect, useState} from 'react';
+import {
+    Box,
+    Input,
+    VStack,
+    HStack,
+    Button,
+    StackDivider,
+    Select,
+    Text,
+    Badge,
+    Flex,
+    Spacer
 } from '@chakra-ui/react';
-import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons';
 
-interface Album {
-  id: number;
-  title: string;
-  url: string;
-  thumbnailUrl: string;
-  albumId: number;
-}
+import { useToast } from '@chakra-ui/react'
+import {AdvancedBaseTable} from "../../components/table/AdvancedBaseTable";
+import type {AdvancedFinalResult, AdvancedResult, Photo} from "../../../public/type"
+import axios from 'axios';
+import {PhotoAdvancedUrl} from '../../config/api';
+
+const baseurl = PhotoAdvancedUrl
 
 const AdvancedTable: React.FC = () => {
-  const [isLoading, setLoading] = useState<boolean>(true)
-  const [data, setData] = useState<Album[]>([])
-  const [search, setSearch] = useState('')
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const [pageSize, setPageSize] = useState<number>(10)
-  const [totalItems, setTotalItems] = useState<number>(0)
-  const [sortField, setSortField] = useState<string>('id')
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+    const toast = useToast();
+    const [isLoading, setLoading] = useState<boolean>(true);
+    const [data, setData] = useState<Photo[]>([]);
+    const [search, setSearch] = useState('');
+    const [isSearch, setIsSearch] = useState<number>(0)
+    const [category, setCategory] = useState('');
+    const [sortBy, setSortBy] = useState('id');
+    const [sortOrder, setSortOrder] = useState('asc');
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [pageSize] = useState<number>(10);
+    const [totalItems, setTotalItems] = useState<number>(0);
+    const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+    const [url, setUrl] = useState<string>(`${baseurl}?page=1&limit=10`);
+    const [delinfo ,setdelinfo] = useState<any>();
+    const [modifyinfo ,setmodifynfo] = useState<any>();
+    const [editingId, setEditingId] = useState<number | null>(null);
+    const [editingTitle, setEditingTitle] = useState<string>('');
 
-  const baseurl = 'https://jsonplaceholder.typicode.com/photos'
+    // 动态状态
+    // const [alertStatus, setAlertStatus] = useState<"success" | "error" | "warning" | "info">("success");
+    // const [alertMessage, setAlertMessage] = useState("");
 
-  useEffect(() => {
-    setLoading(true)
-    fetch(baseurl)
-      .then(response => response.json())
-      .then(photosData => {
-        console.log(photosData);
-        // 模拟分页、搜索和排序
-        let filteredData = photosData;
-        
-        // 搜索过滤
-        if (search) {
-          filteredData = photosData.filter((item: Album) => 
-            item.title.toLowerCase().includes(search.toLowerCase())
-          );
-        }
-        
-        // 排序
-        filteredData.sort((a: Album, b: Album) => {
-          const aVal = a[sortField as keyof Album];
-          const bVal = b[sortField as keyof Album];
-          
-          if (typeof aVal === 'string' && typeof bVal === 'string') {
-            return sortOrder === 'asc' 
-              ? aVal.localeCompare(bVal)
-              : bVal.localeCompare(aVal);
-          }
-          
-          if (typeof aVal === 'number' && typeof bVal === 'number') {
-            return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
-          }
-          
-          return 0;
-        });
-        
-        const startIndex = (currentPage - 1) * pageSize;
-        const endIndex = startIndex + pageSize;
-        const paginatedData = filteredData.slice(startIndex, endIndex);
-        
-        setData(paginatedData)
-        setTotalItems(filteredData.length)
-        setLoading(false)
-      })
-      .catch(error => {
-        console.error(error);
-        setData([])
-        setTotalItems(0)
-        setLoading(false)
-      });
-  }, [currentPage, search, sortField, sortOrder, pageSize])
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(event.target.value)
-  }
-
-  const handleBtnClick: React.MouseEventHandler<HTMLButtonElement> = () => {
-    console.log('点击了按钮');
-    setCurrentPage(1) // 搜索时重置到第一页
-  }
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-  }
-
-  const handleSort = (field: string) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortOrder('asc');
+    const runQuery = () => {
+        axios.get(url)
+            .then(response => {
+                console.log(response.data);
+                const apiResponseData: AdvancedFinalResult = response.data;
+                console.log(apiResponseData)
+                const apiResponse = apiResponseData.data as AdvancedResult
+                setData(apiResponse.data);
+                setTotalItems(apiResponse.pagination.totalItems);
+                setAvailableCategories(apiResponse.metadata.availableCategories);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error(error);
+                setData([]);
+                setTotalItems(0);
+                setLoading(false);
+            });
     }
-  }
+    useEffect(() => {
+        runQuery()
+    }, [isSearch]);
 
-  const totalPages = Math.ceil(totalItems / pageSize)
+    useEffect(()=>{
+        ShowToast()
+    },[delinfo])
 
-  const getSortIcon = (field: string) => {
-    if (sortField !== field) return undefined;
-    return sortOrder === 'asc' ? <ChevronUpIcon /> : <ChevronDownIcon />;
-  }
+    useEffect(()=>{
+        ShowToast()
+    },[modifyinfo])
 
-  return (
-    <VStack
-      divider={<StackDivider borderColor='gray.200' />}
-      spacing={4}
-      align='stretch'
-    >
-      <Box display="flex" justifyContent="space-between" w="100%">
-        <HStack spacing='12px'>
-          <Box w='260px'>
-            <InputGroup>
-              <InputLeftAddon>title</InputLeftAddon>
-              <Input placeholder='搜索内容输入' onChange={handleChange} />
-            </InputGroup>
-          </Box>
-          <Box>
-            <Button colorScheme='teal' size='md' onClick={handleBtnClick}>
-              搜索
-            </Button>
-          </Box>
-        </HStack>
-        
-        <HStack spacing={4}>
-          <Text>每页显示:</Text>
-          <Select 
-            value={pageSize} 
-            onChange={(e) => setPageSize(Number(e.target.value))}
-            w="100px"
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-          </Select>
-        </HStack>
-      </Box>
-      
-      <Box>
-        {isLoading ? (
-          <Box textAlign="center" py={10}>
-            <Spinner size="xl" />
-            <Text mt={4}>加载中...</Text>
-          </Box>
-        ) : (
-          <TableContainer>
-            <Table variant='striped' colorScheme='gray'>
-              <Thead>
-                <Tr>
-                  <Th>
-                    <HStack>
-                      <Text>ID</Text>
-                      <IconButton
-                        aria-label="Sort by ID"
-                        icon={getSortIcon('id')}
-                        size="xs"
-                        variant="ghost"
-                        onClick={() => handleSort('id')}
-                      />
+    const buildUrl = useCallback((page: number=currentPage, searchTerm: string=search, categoryFilter: string=category, sortField: string=sortBy, sortDirection: string=sortOrder) => {
+        const params = new URLSearchParams({
+            page: page.toString(),
+            limit: pageSize.toString(),
+        });
+
+        if (searchTerm) params.append('search', searchTerm);
+        if (categoryFilter) params.append('category', categoryFilter);
+        if (sortField) params.append('sortBy', sortField);
+        if (sortDirection) params.append('sortOrder', sortDirection);
+
+        return `${baseurl}?${params.toString()}`;
+    },[currentPage,search,sortBy,sortOrder,category])
+
+
+    const ShowToast = () => {
+        if (delinfo){
+            toast({
+                id: delinfo.id,
+                title: `delete id:${delinfo.id} success`,
+                status: delinfo.code == 0 ? "success" : "error",
+                duration: 2000,
+                isClosable: true,
+            });
+            setdelinfo(null)
+        }
+        if (modifyinfo){
+            toast({
+                id: modifyinfo.id,
+                title: `modify id:${modifyinfo.id} success`,
+                status: modifyinfo.code == 0 ? "success" : "error",
+                duration: 2000,
+                isClosable: true,
+            });
+            setmodifynfo(null)
+        }
+
+    }
+
+    //删除
+    const handleDelete = (id: number) => {
+        axios({
+            method: 'delete',
+            url: `${baseurl}`,
+            data: {
+                id: id
+            },
+            headers: {
+                "Content-Type": "application/json",
+            },
+        }).then(response => {
+            console.log(response.data);
+            const apiResponseData: AdvancedFinalResult = response.data;
+            console.log(apiResponseData)
+            setdelinfo(Object.assign(apiResponseData, {id: id}))
+
+            // 触发重新查询
+            setIsSearch((prev) => {
+                return prev + 1
+            })
+
+        })
+            .catch(error => {
+                console.error(error);
+                setdelinfo({code: -1, message: "error"})
+            });
+    }
+
+    const handleModify = (id: number, title: string) => {
+        // 如果当前行正在编辑，则保存修改
+        if (editingId === id) {
+            if (!editingTitle.trim()) {
+                toast({
+                    title: "标题不能为空",
+                    status: "error",
+                    duration: 2000,
+                    isClosable: true,
+                });
+                return;
+            }
+
+            axios({
+                method: 'put',
+                url: `${baseurl}`,
+                data: {
+                    id: id,
+                    title: editingTitle
+                },
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }).then(response => {
+                console.log(response.data);
+                const apiResponseData: AdvancedFinalResult = response.data;
+                console.log(apiResponseData)
+                setmodifynfo(Object.assign(apiResponseData, {id: id}))
+
+                // 退出编辑状态
+                setEditingId(null);
+                setEditingTitle('');
+
+                // 触发重新查询
+                setIsSearch((prev) => {
+                    return prev + 1
+                })
+
+            })
+                .catch(error => {
+                    console.error(error);
+                    setmodifynfo(Object.assign({code: -1, message: "error"},{id: id}))
+                });
+        } else {
+            // 进入编辑状态
+            setEditingId(id);
+            setEditingTitle(title);
+        }
+    }
+
+    const handleCancelEdit = () => {
+        setEditingId(null);
+        setEditingTitle('');
+    }
+
+    const handleSearch = () => {
+        setLoading(true);
+        setCurrentPage(1);
+        setUrl(buildUrl(1, search, category, sortBy, sortOrder));
+        setIsSearch((prev) => {
+            return prev + 1
+        })
+    };
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        setLoading(true);
+        setUrl(buildUrl(page, search, category, sortBy, sortOrder));
+        setIsSearch((prev) => {
+            return prev + 1
+        })
+    };
+
+    const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const newCategory = event.target.value;
+        setCategory(newCategory);
+        setLoading(true);
+        setCurrentPage(1);
+        setUrl(buildUrl(1, search, newCategory, sortBy, sortOrder));
+        setIsSearch((prev) => {
+            return prev + 1
+        })
+    };
+
+    const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const newSortBy = event.target.value;
+        setSortBy(newSortBy);
+        setLoading(true);
+        setCurrentPage(1);
+        setUrl(buildUrl(1, search, category, newSortBy, sortOrder));
+        setIsSearch((prev) => {
+            return prev + 1
+        })
+    };
+
+    const handleSortOrderChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const newSortOrder = event.target.value;
+        setSortOrder(newSortOrder);
+        setLoading(true);
+        setCurrentPage(1);
+        setUrl(buildUrl(1, search, category, sortBy, newSortOrder));
+        setIsSearch((prev) => {
+            return prev + 1
+        })
+    };
+
+    const clearFilters = () => {
+        setSearch('');
+        setCategory('');
+        setSortBy('id');
+        setSortOrder('asc');
+        setLoading(true);
+        setCurrentPage(1);
+        setUrl(buildUrl(1, '', '', 'id', 'asc'));
+        setIsSearch((prev) => {
+            return prev + 1
+        })
+    };
+
+    return (
+        <VStack
+            divider={<StackDivider borderColor='gray.200'/>}
+            spacing={4}
+            align='stretch'
+        >
+            {/* 搜索和过滤区域 */}
+            <Box>
+                <VStack spacing={4} align="stretch">
+                    {/* 搜索行 */}
+                    <Flex gap={4} align="center">
+                        <Box flex="1">
+                            <Input
+                                placeholder='搜索照片标题或ID'
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                            />
+                        </Box>
+                        <Button colorScheme='teal' onClick={handleSearch}>
+                            搜索
+                        </Button>
+                        <Button variant="outline" onClick={clearFilters}>
+                            清除过滤
+                        </Button>
+                    </Flex>
+
+                    {/* 过滤行 */}
+                    <HStack spacing={4} align="center">
+                        <Box>
+                            <Text fontSize="sm" mb={1}>分类:</Text>
+                            <Select
+                                value={category}
+                                onChange={handleCategoryChange}
+                                placeholder="所有分类"
+                                size="sm"
+                                w="150px"
+                            >
+                                {availableCategories.map(cat => (
+                                    <option key={cat} value={cat}>{cat}</option>
+                                ))}
+                            </Select>
+                        </Box>
+
+                        <Box>
+                            <Text fontSize="sm" mb={1}>排序字段:</Text>
+                            <Select
+                                value={sortBy}
+                                onChange={handleSortChange}
+                                size="sm"
+                                w="120px"
+                            >
+                                <option value="id">ID</option>
+                                <option value="title">标题</option>
+                                <option value="createdAt">创建时间</option>
+                                <option value="views">浏览量</option>
+                                <option value="likes">点赞数</option>
+                            </Select>
+                        </Box>
+
+                        <Box>
+                            <Text fontSize="sm" mb={1}>排序方向:</Text>
+                            <Select
+                                value={sortOrder}
+                                onChange={handleSortOrderChange}
+                                size="sm"
+                                w="100px"
+                            >
+                                <option value="asc">升序</option>
+                                <option value="desc">降序</option>
+                            </Select>
+                        </Box>
+
+                        <Spacer/>
+
+                        <Box>
+                            <Badge colorScheme="blue" fontSize="sm">
+                                共 {totalItems} 条记录
+                            </Badge>
+                        </Box>
                     </HStack>
-                  </Th>
-                  <Th>
-                    <HStack>
-                      <Text>标题</Text>
-                      <IconButton
-                        aria-label="Sort by title"
-                        icon={getSortIcon('title')}
-                        size="xs"
-                        variant="ghost"
-                        onClick={() => handleSort('title')}
-                      />
-                    </HStack>
-                  </Th>
-                  <Th>相册ID</Th>
-                  <Th>缩略图</Th>
-                  <Th>操作</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {data.map((item) => (
-                  <Tr key={item.id}>
-                    <Td>
-                      <Badge colorScheme="blue">{item.id}</Badge>
-                    </Td>
-                    <Td>
-                      <Tooltip label={item.title}>
-                        <Text isTruncated maxW="200px">
-                          {item.title}
-                        </Text>
-                      </Tooltip>
-                    </Td>
-                    <Td>
-                      <Badge colorScheme="green">{item.albumId}</Badge>
-                    </Td>
-                    <Td>
-                      <img 
-                        src={item.thumbnailUrl} 
-                        alt={item.title} 
-                        style={{ width: '50px', height: '50px', borderRadius: '4px' }} 
-                      />
-                    </Td>
-                    <Td>
-                      <HStack>
-                        <Button size="sm" colorScheme="blue">查看</Button>
-                        <Button size="sm" colorScheme="orange">编辑</Button>
-                        <Button size="sm" colorScheme="red">删除</Button>
-                      </HStack>
-                    </Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </TableContainer>
-        )}
-        
-        {/* 分页 */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mt={4}>
-          <Text fontSize="sm" color="gray.600">
-            显示 {((currentPage - 1) * pageSize) + 1} - {Math.min(currentPage * pageSize, totalItems)} 条，共 {totalItems} 条
-          </Text>
-          <HStack spacing={2}>
-            <Button 
-              isDisabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-            >
-              上一页
-            </Button>
-            <Text>
-              第 {currentPage} 页，共 {totalPages} 页
-            </Text>
-            <Button 
-              isDisabled={currentPage === totalPages}
-              onClick={() => handlePageChange(currentPage + 1)}
-            >
-              下一页
-            </Button>
-          </HStack>
-        </Box>
-      </Box>
-    </VStack>
-  );
+                </VStack>
+            </Box>
+
+            {/* 表格区域 */}
+            <Box>
+                <AdvancedBaseTable
+                    url={url}
+                    data={data}
+                    page={currentPage}
+                    pageSize={pageSize}
+                    isLoading={isLoading}
+                    totalItems={totalItems}
+                    handleModify={handleModify}
+                    handleDelete={handleDelete}
+                    onPageChange={handlePageChange}
+                    editingId={editingId}
+                    editingTitle={editingTitle}
+                    setEditingTitle={setEditingTitle}
+                    handleCancelEdit={handleCancelEdit}
+                />
+            </Box>
+        </VStack>
+    );
 };
 
 export default AdvancedTable;

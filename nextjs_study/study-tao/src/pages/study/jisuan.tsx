@@ -20,21 +20,21 @@ interface Iprops {
   value: number
 }
 
-const Child: React.FC<Iprops> = (props: Iprops) => {
+const Child: React.FC<Iprops> = React.memo((props: Iprops) => {
   console.log(props)
 
-  const squared = useMemo(() => {
+  const squared = () => {
     return {
       pingfang: props.value ** 2,
       lifang: props.value ** 3
     }
-  }, [props.value])
+  }
 
   return (
     <StatGroup>
       <Stat>
         <StatLabel>平方</StatLabel>
-        <StatNumber>{squared.pingfang.toFixed(3)}</StatNumber>
+        <StatNumber>{squared().pingfang.toFixed(3)}</StatNumber>
         <StatHelpText>
           <StatArrow type='increase' />
           n*n
@@ -43,7 +43,7 @@ const Child: React.FC<Iprops> = (props: Iprops) => {
 
       <Stat>
         <StatLabel>立方</StatLabel>
-        <StatNumber>{squared.lifang.toFixed(3)}</StatNumber>
+        <StatNumber>{squared().lifang.toFixed(3)}</StatNumber>
         <StatHelpText>
           <StatArrow type='increase' />
           n**3
@@ -51,7 +51,7 @@ const Child: React.FC<Iprops> = (props: Iprops) => {
       </Stat>
     </StatGroup>
   )
-}
+})
 
 const Jisuan: React.FC = () => {
   const [value, setvalue] = useState<number>(0)
@@ -59,6 +59,8 @@ const Jisuan: React.FC = () => {
   const numChange = (valueAsString: string, valueAsNumber: number) => {
     setvalue(valueAsNumber)
   }
+
+
   return (
     <VStack spacing={4} align="stretch">
       <Child value={value}></Child>

@@ -13,6 +13,7 @@ type TObj = {
 }
 
 type TObj1 = keyof TObj
+
 let obj12:TObj = {
     name:"123",
     age:"123",
@@ -26,4 +27,4 @@ let obj12:TObj = {
 interface Myarr<T>{
     [n:number]:T
 }
-const arr123:Myarr<string> = ["1","2","3"]
+const arr123:Myarr<string> = ["a","2","3"]
