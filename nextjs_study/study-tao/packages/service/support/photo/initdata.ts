@@ -1,4 +1,4 @@
-import { MongoPhoto } from './schema'
+import { MongoPhoto, createIndexes } from './schema'
 import { MongoUser } from '../user/schema'
 import type { PhotoSchema } from './type'
 import {
@@ -153,8 +153,11 @@ export const initPhotoTestQuery = async () => {
 
     // 2. 查询照片并关联用户
     console.log('\n📸 查询照片并关联用户:')
-    const photosWithUsers = await MongoPhoto.find({})
-      .populate('associatedUser', 'name email role')
+    const photosWithUsers = await MongoPhoto.find({}).populate('associatedUser', 'name email role')
+    // console.log(photosWithUsers[0])
+    // console.log(photosWithUsers[0].associatedUser)
+    // console.log(photosWithUsers[0].toObject())
+    // console.log(photosWithUsers[0].toJSON())
 
     console.log(`✅ 查询到 ${photosWithUsers.length} 个照片（带用户信息）`)
     photosWithUsers.forEach((photo, index) => {
@@ -218,4 +221,9 @@ export const initPhotoTestQuery = async () => {
     console.log(`❌ 测试照片查询功能失败: ${error}`)
     throw error
   }
+}
+
+
+export const initPhotoIndex = async () => {
+  await createIndexes()
 }

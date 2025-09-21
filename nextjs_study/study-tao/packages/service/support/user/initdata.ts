@@ -1,4 +1,4 @@
-import { MongoUser } from './schema'
+import { MongoUser, createIndexes } from './schema'
 import type { UserSchema } from './type'
 import { 
   checkIndexExists, 
@@ -106,7 +106,9 @@ export const initUser = async () => {
   }
 }
 
-
+export const initUserIndex = async () => {
+  await createIndexes()
+}
 export const initUserTestQuery = async () => {
     // 测试name查询功能
     try {

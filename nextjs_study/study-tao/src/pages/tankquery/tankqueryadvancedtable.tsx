@@ -52,7 +52,7 @@ const TankQueryAdvancedTable: React.FC = () => {
         retry: false,
         cacheTime: 10,  //毫秒，缓存时间
         networkMode: 'always',
-        queryKey: ['repoData', url], // 全局唯一KEY，一样的key在不同组件中同时缓存。  数组内变量 改变时自动触发
+        queryKey: ['repoData', url], // todo 全局触发条件，全局唯一KEY，一样的key在不同组件中同时缓存。  数组内变量 改变时自动触发
         queryFn: async () => {
             try {
                 const response = await axios.get(url);

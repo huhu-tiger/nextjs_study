@@ -32,28 +32,24 @@ export async function connectMongo(db: Mongoose, url: string): Promise<Mongoose>
         }
       } catch (error) {}
     });
-    db.connection.on('disconnected', async () => {
+    db.connection.on('disconnected', () => {
       console.log('mongo disconnected');
-      try {
-        if (db.connection.readyState !== 0) {
-          await db.disconnect();
-          await delay(1000);
-          await connectMongo(db, url);
-        }
-      } catch (error) {}
+      // 不立即重连，让连接池自然管理
     });
 
     const options = {
       bufferCommands: true,
       maxConnecting: maxConnecting,
       maxPoolSize: maxConnecting,
-      minPoolSize: 20,
+      minPoolSize: 5, // 减少最小连接数
       connectTimeoutMS: 60000,
       waitQueueTimeoutMS: 60000,
       socketTimeoutMS: 60000,
-      maxIdleTimeMS: 300000,
+      maxIdleTimeMS: 600000, // 增加空闲时间到10分钟
       retryWrites: true,
-      retryReads: true
+      retryReads: true,
+      serverSelectionTimeoutMS: 5000, // 服务器选择超时
+      heartbeatFrequencyMS: 10000 // 心跳频率
     };
 
     db.connect(url, options);

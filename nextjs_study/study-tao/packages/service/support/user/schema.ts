@@ -70,22 +70,23 @@ UserSchema.set('toJSON', { virtuals: true });
 UserSchema.set('toObject', { virtuals: true });
 
 // 中间件：更新时自动设置 updatedAt
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', function (next) {
   this.updatedAt = new Date();
   next();
 });
 
 // 索引
-try {
-  UserSchema.index({ role: 1 });
-  UserSchema.index({ status: 1 });
-  UserSchema.index({ createdAt: -1 });
-  console.log('User schema index success');
-  console.log('User schema index:', UserSchema.indexes());
-} catch (error) {
-  console.log('User schema index error:', error);
+export function createIndexes() {
+  try {
+    UserSchema.index({ role: 1 });
+    UserSchema.index({ status: 1 });
+    UserSchema.index({ createdAt: -1 });
+    console.log('User schema index success');
+    console.log('User schema index:', UserSchema.indexes());
+  } catch (error) {
+    console.log('User schema index error:', error);
+  }
 }
-
 export const MongoUser = getMongoModel<SchemaType>('user', UserSchema);
 
 

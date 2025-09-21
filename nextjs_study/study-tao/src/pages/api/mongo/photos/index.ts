@@ -58,18 +58,18 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     sort[sortBy as string] = sortOrder === 'desc' ? -1 : 1;
 
     // 查询照片并关联用户信息
-    const photos = await MongoPhoto.find(query)
-      .populate('associatedUser', 'name email role avatar')
-      .sort(sort)
-      .skip(skip)
-      .limit(limitNum);
+    const photos: PhotoSchema[] | undefined = await MongoPhoto.find(query)
+        .populate('associatedUser', 'name email role')
+        .sort(sort)
+        .skip(skip)
+        .limit(limitNum);
 
     const total = await MongoPhoto.countDocuments(query);
 
     return res.status(200).json({
       success: true,
       data: {
-        photos,
+        photos: photos, // 使用 toObject() 确保包含虚拟字段
         pagination: {
           page: pageNum,
           limit: limitNum,

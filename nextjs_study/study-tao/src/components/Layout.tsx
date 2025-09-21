@@ -97,10 +97,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       ]
     },
     {
-      path: '/mongodb',
-      label: 'mongodb',
+      path: '/nextjs_study',
+      label: 'nextjs特性',
       children: [
-        { path: '/mongodb/photos', label: 'mongodb照片' },
+        { path: '/nextjs_study/photos', label: 'nextjs_study照片' },
+        { path: '/nextjs_study/routerdemo', label: 'nextjs_study路由' },
       ]
     }
   ];
